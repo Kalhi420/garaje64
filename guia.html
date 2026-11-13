@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14202B">
+<title>Cómo instalar Garaje 64</title>
+<meta name="description" content="Guía rápida para instalar Garaje 64 en tu iPhone o Android y empezar tu colección de autos 1:64.">
+<meta property="og:title" content="Cómo instalar Garaje 64">
+<meta property="og:description" content="Instálala en tu teléfono en 1 minuto. Gratis y sin cuenta.">
+<meta property="og:image" content="https://kalhi420.github.io/garaje64/icon-512.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: una columna de lectura, pasos numerados por plataforma, botón grande para abrir la app */
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --sunken:#E2E7EC; --line:#CBD3DB;
+  --ink:#14202B; --muted:#5A6B7A; --accent:#E8530E; --accent-ink:#FFFFFF; --ok:#1E7B4A;
+  --f-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --f-body:"Barlow",-apple-system,system-ui,"Segoe UI",sans-serif;
+  --f-label:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0F161D; --surface:#18222C; --sunken:#121A22; --line:#2A3946; --ink:#E8EEF3; --muted:#93A4B3;
+  --accent:#FF6A26; --accent-ink:#1A0A02; --ok:#4CC383; color-scheme:dark}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--f-body)}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+header{background:#14202B;color:#fff;padding-top:env(safe-area-inset-top,0px)}
+header .wrap{padding-block:26px 24px;display:flex;flex-direction:column;gap:10px}
+.brand{font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.5px;text-transform:uppercase}
+.brand b{color:#FF6A26}
+h1{font-family:var(--f-display);font-weight:900;font-size:clamp(40px,11vw,60px);line-height:.98;margin:0;text-transform:uppercase;text-wrap:balance}
+header p{margin:0;color:#C9D3DC;max-width:46ch}
+.open{display:flex;align-items:center;justify-content:center;gap:8px;background:#FF6A26;color:#1A0A02;text-decoration:none;font-weight:700;font-size:18px;border-radius:12px;padding:14px 18px;margin-top:6px}
+.url{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;color:#fff;background:rgba(255,255,255,.1);border-radius:8px;padding:8px 10px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.url button{background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:7px;padding:4px 10px;font:600 14px var(--f-body);cursor:pointer}
+main{padding-block:22px 40px;display:flex;flex-direction:column;gap:22px}
+h2{font-family:var(--f-display);font-weight:800;font-size:30px;line-height:1;margin:0 0 10px;text-transform:uppercase}
+.label{font-family:var(--f-label);font-weight:700;font-size:13px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
+.tabs{display:flex;background:var(--sunken);border-radius:12px;padding:4px;gap:4px}
+.tabs button{flex:1;border:0;background:transparent;border-radius:9px;padding:10px;font:700 16px var(--f-body);color:var(--ink);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+ol.steps{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:10px;counter-reset:s}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:36px 1fr;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+ol.steps li::before{content:counter(s);width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:900 19px var(--f-display)}
+ol.steps b{display:block;line-height:1.3}
+ol.steps span{color:var(--muted);font-size:15px}
+.key{display:inline-block;border:1px solid var(--line);border-radius:6px;padding:0 6px;background:var(--sunken);font-weight:600;color:var(--ink)}
+.note{background:color-mix(in srgb,var(--accent) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));border-radius:12px;padding:12px 14px}
+.note p{margin:0}
+.feats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0;padding:0;list-style:none}
+.feats li{background:var(--surface);border-radius:12px;padding:12px;border:1px solid var(--line)}
+.feats b{display:block;font-family:var(--f-label);text-transform:uppercase;letter-spacing:.6px;font-size:15px}
+.feats span{color:var(--muted);font-size:14px;line-height:1.4;display:block;margin-top:2px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0 14px}
+summary{cursor:pointer;padding:12px 0;font-weight:700}
+details p{margin:0 0 12px;color:var(--muted)}
+.faq{display:flex;flex-direction:column;gap:8px}
+footer{color:var(--muted);font-size:13px;padding-bottom:max(30px,env(safe-area-inset-bottom,0px))}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="brand">Garaje<b>64</b></div>
+  <h1>Instálala en 1 minuto</h1>
+  <p>La app para tu colección de autos 1:64. Escanea el código del blíster, toma la foto de tu auto y lleva tu colección, repetidos y valor. Gratis y sin cuenta.</p>
+  <div class="url"><span id="u">kalhi420.github.io/garaje64</span><button type="button" id="copy">Copiar</button></div>
+  <a class="open" href="./">Abrir Garaje 64</a>
+</div></header>
+
+<main class="wrap">
+  <section>
+    <span class="label">Paso a paso</span>
+    <h2>Cómo instalarla</h2>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" id="t-ios" aria-selected="true" aria-controls="p-ios">iPhone</button>
+      <button type="button" role="tab" id="t-and" aria-selected="false" aria-controls="p-and">Android</button>
+    </div>
+    <ol class="steps" id="p-ios" role="tabpanel" aria-labelledby="t-ios">
+      <li><div><b>Abre el enlace en Safari</b><span>Si te llegó por WhatsApp, toca los tres puntos <span class="key">⋯</span> y elige “Abrir en Safari”.</span></div></li>
+      <li><div><b>Toca el botón Compartir</b><span>Es el cuadrado con una flecha hacia arriba <span class="key">⬆︎</span>, en la barra de abajo.</span></div></li>
+      <li><div><b>Elige “Agregar a inicio”</b><span>Desliza la lista hacia abajo si no lo ves. Luego toca “Agregar”.</span></div></li>
+      <li><div><b>Ábrela siempre desde el ícono</b><span>Aparece Garaje 64 en tu pantalla de inicio. Desde ahí tus autos quedan guardados en tu teléfono.</span></div></li>
+    </ol>
+    <ol class="steps" id="p-and" role="tabpanel" aria-labelledby="t-and" hidden>
+      <li><div><b>Abre el enlace en Chrome</b><span>Si te llegó por WhatsApp, toca los tres puntos y elige “Abrir en Chrome”.</span></div></li>
+      <li><div><b>Toca los tres puntos <span class="key">⋮</span></b><span>Arriba a la derecha de Chrome.</span></div></li>
+      <li><div><b>Elige “Instalar app”</b><span>En algunos teléfonos dice “Agregar a pantalla principal”. Confirma.</span></div></li>
+      <li><div><b>Ábrela siempre desde el ícono</b><span>Aparece Garaje 64 con tus otras apps. Desde ahí tus autos quedan guardados en tu teléfono.</span></div></li>
+    </ol>
+  </section>
+
+  <div class="note"><p><b>Importante:</b> usa siempre el ícono de la pantalla de inicio. Si la usas solo en el navegador, el teléfono puede borrar tus autos con el tiempo.</p></div>
+
+  <section>
+    <span class="label">Qué puedes hacer</span>
+    <h2>Lo que trae</h2>
+    <ul class="feats">
+      <li><b>Escanear</b><span>Foto al código del blíster (ej. HYW43) y la app reconoce el auto.</span></li>
+      <li><b>Catálogo</b><span>Línea principal 2025 y 2026, con lo que te falta por serie.</span></li>
+      <li><b>Tu foto</b><span>Guarda la foto de tu propio auto, su estado y precio.</span></li>
+      <li><b>Valor</b><span>Cuánto invertiste, cuánto vale y tus TH y Super TH.</span></li>
+      <li><b>Repetidos</b><span>Cuenta copias y marca las que tienes para intercambio.</span></li>
+      <li><b>Listas</b><span>Todas las que quieras: vitrinas, cajas, wishlist.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <span class="label">Dudas</span>
+    <h2>Preguntas frecuentes</h2>
+    <div class="faq">
+      <details><summary>¿Tiene costo o necesito cuenta?</summary><p>No. Es gratis y no pide cuenta, correo ni contraseña.</p></details>
+      <details><summary>¿Alguien más puede ver mi colección?</summary><p>No. Tus autos se guardan solo en tu teléfono. Nadie más los ve.</p></details>
+      <details><summary>¿Funciona sin internet?</summary><p>Sí, una vez instalada. Solo la primera vez que escaneas necesita internet para descargar el lector de códigos.</p></details>
+      <details><summary>¿Y si cambio de teléfono?</summary><p>En la app ve a Ajustes → Exportar respaldo y guárdalo en Archivos o envíatelo. En el teléfono nuevo, instala la app y usa Ajustes → Importar respaldo.</p></details>
+      <details><summary>¿Qué pasa si borro el ícono?</summary><p>Se borran tus autos de ese teléfono. Exporta un respaldo antes de borrarlo.</p></details>
+    </div>
+  </section>
+
+  <a class="open" href="./" style="background:var(--accent);color:var(--accent-ink)">Abrir Garaje 64</a>
+  <footer>Garaje 64 es una app independiente para coleccionistas de autos a escala 1:64. No está afiliada a ningún fabricante de juguetes.</footer>
+</main>
+
+<script>
+// pestaña según el teléfono
+const isAndroid = /Android/i.test(navigator.userAgent);
+function show(which){
+  const ios = which === "ios";
+  document.getElementById("t-ios").setAttribute("aria-selected", ios);
+  document.getElementById("t-and").setAttribute("aria-selected", !ios);
+  document.getElementById("p-ios").hidden = !ios;
+  document.getElementById("p-and").hidden = ios;
+}
+document.getElementById("t-ios").onclick = () => show("ios");
+document.getElementById("t-and").onclick = () => show("and");
+if(isAndroid) show("and");
+document.getElementById("copy").onclick = async (e) => {
+  const t = "https://kalhi420.github.io/garaje64/";
+  try{ await navigator.clipboard.writeText(t); e.target.textContent = "Copiado"; }
+  catch(err){ const r = document.createRange(); r.selectNodeContents(document.getElementById("u")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+  setTimeout(() => e.target.textContent = "Copiar", 2000);
+};
+</script>
+</body>
+</html>
