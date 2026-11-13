@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14202B">
+<meta property="og:title" content="Manual de Garaje 64">
+<meta property="og:description" content="Cómo instalar y usar Garaje 64, paso a paso.">
+<meta property="og:image" content="https://kalhi420.github.io/garaje64/icon-512.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>html{-webkit-text-size-adjust:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Manual de Garaje 64</title>
+</head>
+<body>
+
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: guía por capítulos — índice en fichas arriba, a la izquierda los pasos, a la derecha un iPhone que muestra cada paso */
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --sunken:#E2E7EC; --line:#CBD3DB;
+  --ink:#14202B; --muted:#5A6B7A; --accent:#E8530E; --accent-ink:#FFFFFF; --ok:#1E7B4A; --blue:#1B4F9C; --gold:#B8860B;
+  --ios:#007AFF; --phone:#14202B;
+  --f-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --f-body:"Barlow",-apple-system,system-ui,"Segoe UI",sans-serif;
+  --f-label:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F161D; --surface:#18222C; --sunken:#121A22; --line:#2A3946; --ink:#E8EEF3; --muted:#93A4B3;
+  --accent:#FF6A26; --accent-ink:#1A0A02; --ok:#4CC383; --blue:#6FA3F0; --gold:#E2B33C; --ios:#0A84FF; --phone:#000000; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F161D; --surface:#18222C; --sunken:#121A22; --line:#2A3946; --ink:#E8EEF3; --muted:#93A4B3;
+  --accent:#FF6A26; --accent-ink:#1A0A02; --ok:#4CC383; --blue:#6FA3F0; --gold:#E2B33C; --ios:#0A84FF; --phone:#000000; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:#14202B}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);text-transform:uppercase;margin:0;line-height:1.02;text-wrap:balance}
+.label{font-family:var(--f-label);text-transform:uppercase;letter-spacing:1.2px;font-size:12px;font-weight:700;color:var(--muted)}
+
+header.hero{background:#14202B;color:#fff}
+header.hero .wrap{padding-block:22px 20px;display:flex;flex-direction:column;gap:10px}
+header.hero h1{font-size:clamp(38px,9vw,64px);font-weight:900;letter-spacing:.5px}
+header.hero h1 b{color:#FF6A26}
+header.hero p{margin:0;max-width:60ch;color:#C9D3DC}
+.getapp{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch;max-width:560px}
+.urlbox{flex:1 1 240px;min-width:0;display:flex;justify-content:space-between;align-items:center;gap:8px;background:rgba(255,255,255,.1);border-radius:10px;padding:8px 10px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;color:#fff}
+.urlbox span{overflow-wrap:anywhere}
+.urlbox button{background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:7px;padding:4px 10px;font:600 14px var(--f-body);cursor:pointer;flex:none}
+.openapp{flex:0 1 auto;display:flex;align-items:center;justify-content:center;background:#FF6A26;color:#1A0A02;text-decoration:none;font-weight:700;border-radius:10px;padding:10px 16px}
+.progress{display:flex;align-items:center;gap:10px;font-family:var(--f-label);font-weight:700;font-size:14px;color:#C9D3DC}
+.progress .bar{flex:1;max-width:280px;height:8px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden}
+.progress .bar i{display:block;height:100%;background:#4CC383;width:0;transition:width .3s}
+
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+nav.toc .wrap{display:flex;gap:6px;overflow-x:auto;padding-block:10px;scrollbar-width:none}
+nav.toc .wrap::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:7px 12px;font-family:var(--f-label);font-weight:700;font-size:14px;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.chip .n{font-variant-numeric:tabular-nums;color:var(--muted)}
+.chip[aria-current="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip[aria-current="true"] .n{color:inherit;opacity:.7}
+.chip.done .n::after{content:" ✓";color:var(--ok)}
+.chip[aria-current="true"].done .n::after{color:#4CC383}
+
+main{padding-block:20px 60px}
+.chapter{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:start}
+@media(max-width:780px){.chapter{grid-template-columns:1fr}.phone-col{display:none}}
+.inline-phone{display:none}
+@media(max-width:780px){.inline-phone{display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px 0 10px}.inline-phone .phone{width:230px}}
+.ch-head{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.ch-head h2{font-size:clamp(30px,6vw,42px);font-weight:900}
+.ch-head p{margin:0;max-width:62ch;color:var(--muted)}
+.steps{display:flex;flex-direction:column;gap:8px;counter-reset:s}
+.step{display:grid;grid-template-columns:34px 1fr;gap:12px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;width:100%}
+.step{scroll-margin-top:calc(64px + env(safe-area-inset-top,0px))}
+.step .k{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--sunken);font-family:var(--f-display);font-weight:900;font-size:18px;font-variant-numeric:tabular-nums}
+.step b{display:block;line-height:1.3}
+.step span.d{display:block;color:var(--muted);font-size:15px;margin-top:2px}
+.step[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.step[aria-pressed="true"] .k{background:var(--accent);color:var(--accent-ink)}
+.tip{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--sunken);display:flex;gap:10px}
+.tip.warn{background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.tip strong{font-family:var(--f-label);text-transform:uppercase;letter-spacing:1px;font-size:12px;display:block;color:var(--muted)}
+.tip p{margin:2px 0 0}
+.nav-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 14px;font-weight:600}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* iPhone */
+.phone-col{position:sticky;top:calc(64px + env(safe-area-inset-top,0px));display:flex;flex-direction:column;align-items:center;gap:10px}
+@media(max-width:780px){.phone-col{position:static}}
+.phone{width:270px;max-width:100%;aspect-ratio:9/18.5;background:var(--phone);border-radius:42px;padding:10px;box-shadow:0 10px 30px rgba(20,32,43,.25);position:relative}
+.screen{width:100%;height:100%;border-radius:33px;overflow:hidden;background:#EEF1F4;color:#14202B;position:relative;display:flex;flex-direction:column;font-size:11px;line-height:1.35}
+.island{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:76px;height:22px;background:#000;border-radius:14px;z-index:5}
+.sb{height:34px;flex:none;display:flex;justify-content:space-between;align-items:flex-end;padding:0 22px 4px;font-weight:700;font-size:11px}
+.sb.dark{background:#14202B;color:#fff}
+.cap{font-size:12px;color:var(--muted);text-align:center;max-width:270px;min-height:2.6em}
+/* piezas de la app dentro del teléfono */
+.ah{background:#14202B;color:#fff;display:flex;align-items:center;padding:6px 10px;gap:6px}
+.ah .br{font-family:var(--f-display);font-weight:900;font-size:16px}
+.ah .br b{color:#FF6A26}
+.ah .pill{margin-left:auto;border:1px solid rgba(255,255,255,.3);border-radius:99px;padding:1px 6px;font-size:8px}
+.body{flex:1;padding:8px 10px;display:flex;flex-direction:column;gap:6px;overflow:hidden;position:relative}
+.h{font-family:var(--f-display);font-weight:900;font-size:18px;text-transform:uppercase;line-height:1}
+.sm{font-size:9px;color:#5A6B7A;text-transform:uppercase;letter-spacing:.8px;font-weight:700}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.mc{background:#fff;border-radius:7px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.mc .ph{aspect-ratio:4/3;background:#E2E7EC;display:grid;place-items:center}
+.mc .ph i{width:60%;height:28%;border-radius:40% 40% 18% 18%;background:var(--c,#8A96A3);display:block}
+.mc .t{padding:4px 5px;font-weight:700;font-size:9px}
+.tb{height:44px;flex:none;background:#fff;border-top:1px solid #CBD3DB;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;text-align:center;font-size:7px;font-weight:700;color:#5A6B7A;text-transform:uppercase;padding-bottom:4px}
+.tb .sc{width:30px;height:30px;border-radius:50%;background:#E8530E;margin:-14px auto 0;border:3px solid #EEF1F4}
+.tb .on{color:#E8530E}
+.row{display:flex;gap:5px;align-items:center}
+.inp{background:#fff;border:1px solid #CBD3DB;border-radius:6px;padding:5px 6px;color:#5A6B7A;font-size:9px}
+.b{background:#fff;border:1px solid #CBD3DB;border-radius:6px;padding:5px 7px;font-weight:700;font-size:9px;text-align:center}
+.b.o{background:#E8530E;color:#fff;border-color:#E8530E}
+.b.d{background:#14202B;color:#fff;border-color:#14202B}
+.card{background:#fff;border-radius:8px;padding:7px;display:flex;flex-direction:column;gap:4px}
+.seg{display:flex;background:#E2E7EC;border-radius:6px;padding:2px;gap:2px}
+.seg span{flex:1;text-align:center;padding:4px;border-radius:5px;font-weight:700;font-size:9px}
+.seg .on{background:#fff;color:#E8530E}
+.tag{display:inline-block;font-size:7px;font-weight:800;padding:1px 4px;border-radius:3px;background:#1B4F9C;color:#fff;text-transform:uppercase}
+.tag.g{background:#B8860B;color:#1a1200}
+.tag.w{background:#E8530E}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#F2F2F7;border-radius:14px 14px 0 0;padding:8px 10px 14px;display:flex;flex-direction:column;gap:6px;box-shadow:0 -6px 20px rgba(0,0,0,.18);z-index:3}
+.sheet .grab{width:30px;height:4px;border-radius:2px;background:#C7C7CC;margin:0 auto 2px}
+.ios-row{background:#fff;border-radius:9px;padding:7px 9px;display:flex;justify-content:space-between;font-size:10px}
+.ios-row.blue{color:#007AFF;font-weight:600;justify-content:center}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.35);z-index:2}
+.safari-bar{flex:none;background:#F9F9F9;border-top:1px solid #D1D1D6;padding:6px 10px 10px;display:flex;flex-direction:column;gap:6px}
+.url{background:#E9E9EB;border-radius:8px;padding:5px 8px;text-align:center;font-size:9px;color:#3C3C43}
+.tools{display:flex;justify-content:space-between;color:#007AFF;font-size:14px;padding:0 6px}
+.home{flex:1;background:linear-gradient(160deg,#2B3A55,#5B3A6E 55%,#C2564E);padding:44px 16px 16px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px 10px;align-content:start}
+.app{display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff;font-size:7.5px}
+.app i{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.25);display:block}
+.app.g64 i{background:#14202B;position:relative}
+.app.g64 i::after{content:"64";position:absolute;inset:0;display:grid;place-items:center;color:#FF6A26;font-family:var(--f-display);font-weight:900;font-size:17px}
+.cam{flex:1;background:#111;display:flex;flex-direction:column;justify-content:space-between;color:#fff}
+.vf{flex:1;margin:18px;border:2px solid rgba(255,255,255,.6);border-radius:12px;display:grid;place-items:center;position:relative}
+.barcode{width:70%;height:34%;background:repeating-linear-gradient(90deg,#fff 0 2px,#000 2px 3px,#fff 3px 5px,#000 5px 7px,#fff 7px 8px);border-radius:3px}
+.shutter{width:46px;height:46px;border-radius:50%;border:3px solid #fff;margin:0 auto 18px;background:#fff;box-shadow:0 0 0 3px #111 inset}
+/* indicador de toque */
+.hl{position:relative;z-index:4}
+.hl::after{content:"";position:absolute;inset:-4px;border:2px solid #E8530E;border-radius:9px;pointer-events:none}
+@media (prefers-reduced-motion:no-preference){.hl::after{animation:pulse 1.4s ease-out infinite}@keyframes pulse{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.18)}}}
+.hl.round::after{border-radius:50%}
+.prow{display:flex;justify-content:space-between;font-size:9px;padding:3px 0;border-bottom:1px solid #E2E7EC}
+.kpi{background:#fff;border-radius:7px;padding:5px 6px}
+.kpi b{font-family:var(--f-display);font-size:16px;display:block}
+.pb{height:6px;background:#E2E7EC;border-radius:3px;overflow:hidden}.pb i{display:block;height:100%;background:#1E7B4A}
+
+/* FAQ */
+.faq{margin-top:40px;display:flex;flex-direction:column;gap:8px}
+.faq h2{font-size:34px;font-weight:900;margin-bottom:6px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0 14px}
+summary{cursor:pointer;padding:13px 0;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:10px}
+summary::after{content:"+";font-family:var(--f-display);font-size:22px;line-height:1;color:var(--accent)}
+details[open] summary::after{content:"−"}
+details p{margin:0 0 14px;color:var(--muted);max-width:68ch}
+footer{color:var(--muted);font-size:13px;padding-block:20px 40px}
+</style>
+
+<header class="hero"><div class="wrap">
+  <div class="label" style="color:#93A4B3">Guía para iPhone y Android · gratis y sin cuenta</div>
+  <h1>Manual de Garaje<b>64</b></h1>
+  <p>Instala la app desde esta dirección y sigue el capítulo 1. Luego toca cada paso y mira en el iPhone qué tienes que tocar.</p>
+  <div class="getapp">
+    <div class="urlbox"><span id="appUrl">kalhi420.github.io/garaje64</span><button type="button" id="copyUrl">Copiar</button></div>
+    <a class="openapp" href="https://kalhi420.github.io/garaje64/" target="_blank" rel="noopener">Abrir Garaje 64</a>
+  </div>
+  <div class="progress"><span id="pTxt">0 de 11 capítulos</span><span class="bar"><i id="pBar"></i></span></div>
+</div></header>
+
+<nav class="toc" aria-label="Capítulos"><div class="wrap" id="toc"></div></nav>
+
+<main class="wrap">
+  <section id="chapter" aria-live="polite"></section>
+
+  <section class="faq" aria-labelledby="faqT">
+    <h2 id="faqT">Problemas frecuentes</h2>
+    <details><summary>Guardé autos y al día siguiente ya no estaban</summary><p>Pasaba con la versión que se abría dentro de claude.ai: ahí Safari no guarda nada de forma permanente. Usa la versión instalable (kalhi420.github.io/garaje64, agregada a la pantalla de inicio): ahí los autos se quedan en tu teléfono.</p></details>
+    <details><summary>Abrí la app y mi colección aparece vacía</summary><p>Revisa que la abriste desde el ícono de la pantalla de inicio y no desde una pestaña de Safari: son espacios separados. Si nada aparece, importa tu último respaldo desde Ajustes.</p></details>
+    <details><summary>Al tocar "Tomar foto del código" no se abre la cámara</summary><p>Entra a Ajustes del iPhone, busca Safari (o la app de Claude) y activa el permiso de Cámara. Mientras tanto, usa "Usar una foto de la galería" o escribe los números que están debajo de las barras.</p></details>
+    <details><summary>Dice que no encontró el código en la foto</summary><p>Acércate al código que está junto al gancho (por ejemplo HYW43-N7C5), evita reflejos del plástico y toma la foto con buena luz. Si aun así no lo lee, toca el código en la foto cuando la app te lo pida, o escribe las 5 primeras letras y números (HYW43).</p></details>
+    <details><summary>¿Qué es el código HYW43-N7C5?</summary><p>Las primeras 5 letras y números (HYW43) identifican el modelo y su color. Lo que va después del guion es un código de empaque y la app no lo necesita.</p></details>
+    <details><summary>Escaneé un auto y no lo encontró en el catálogo</summary><p>El catálogo incluye la línea principal 2025 y 2026. Para otros años o series especiales, la app abre la ficha para llenarla a mano y guarda el código para la próxima vez.</p></details>
+    <details><summary>¿iOS puede borrar mis autos guardados en el iPhone?</summary><p>No si abres la app desde el ícono de la pantalla de inicio. Solo se borran si eliminas ese ícono o si usas una pestaña de Safari y no la abres en una semana.</p></details>
+    <details><summary>Exporté el respaldo pero no sé dónde quedó</summary><p>Abre la app Archivos del iPhone y entra en "En mi iPhone" o "iCloud Drive", según dónde lo guardaste en la hoja de compartir. El archivo se llama garaje64-respaldo seguido de la fecha.</p></details>
+    <details><summary>¿Por qué no salen las fotos oficiales de los autos?</summary><p>Esas imágenes son propiedad del fabricante. En el catálogo, "Ver fotos" abre la búsqueda en internet, y en tu garaje usas la foto de tu propio auto, que además muestra su estado real.</p></details>
+    <details><summary>¿Cómo se la paso a un amigo?</summary><p>Envíale la dirección kalhi420.github.io/garaje64 y que siga el capítulo 1 para instalarla. Cada uno tiene su propia colección en su teléfono.</p></details>
+  </section>
+  <footer>Garaje 64 es una app independiente para coleccionistas de autos 1:64. No está afiliada a ningún fabricante de juguetes.</footer>
+</main>
+
+<script>
+"use strict";
+/* ---------- pantallas del iPhone ---------- */
+const SB = (dark) => `<div class="sb ${dark?"dark":""}"><span>9:41</span><span>●●● ▮</span></div>`;
+const AH = `<div class="ah"><span class="br">GARAJE<b>64</b></span><span class="pill">Mi cuenta</span><span>⚙</span></div>`;
+const BAR = (on, hl) => `<div class="tb">${["Garaje","Catálogo","","Valor","Listas"].map((t,i)=> i===2 ? `<div><div class="sc ${hl==="scan"?"hl round":""}"></div>Escanear</div>` : `<div class="${on===t?"on":""} ${hl===t?"hl":""}">▢<br>${t}</div>`).join("")}</div>`;
+const CARDS = `<div class="grid2"><div class="mc"><div class="ph"><i style="--c:#ddd"></i></div><div class="t">Toyota AE86</div></div><div class="mc"><div class="ph"><i style="--c:#1B4F9C"></i></div><div class="t"><span class="tag g">STH</span> Mustang GTD</div></div><div class="mc"><div class="ph"><i style="--c:#222"></i></div><div class="t"><span class="tag">TH</span> Buick GNX</div></div><div class="mc"><div class="ph"><i style="--c:#A9B4BE"></i></div><div class="t">Skyline ×3</div></div></div>`;
+const garage = (hl) => `${SB(true)}${AH}<div class="body"><div class="row" style="justify-content:space-between"><div><div class="sm">Mi colección</div><div class="h">8 autos</div></div><div class="b o ${hl==="add"?"hl":""}">+ Agregar</div></div><div class="inp">Buscar por nombre, serie…</div><div class="row"><span class="b d">Todos</span><span class="b">Tengo</span><span class="b ${hl==="wish"?"hl":""}">Wishlist</span><span class="b ${hl==="dupes"?"hl":""}">Repetidos</span></div>${CARDS}</div>${BAR("Garaje", hl)}`;
+
+const S = {
+  safari: (hl) => `${SB()}<div class="body" style="padding:0">${`<div style="flex:1;opacity:.95;display:flex;flex-direction:column;height:100%">${garage("").replace(SB(true),"")}</div>`}</div><div class="safari-bar"><div class="url">🔒 kalhi420.github.io</div><div class="tools"><span>‹</span><span>›</span><span class="${hl==="share"?"hl":""}">⬆︎</span><span>▢</span><span>⧉</span></div></div>`,
+  shareSheet: (hl) => `${SB()}<div class="dim"></div><div class="body"></div><div class="sheet"><div class="grab"></div><div class="ios-row"><b>Garaje 64</b><span>kalhi420.github.io</span></div><div class="ios-row">Copiar<span>⧉</span></div><div class="ios-row">Agregar a favoritos<span>☆</span></div><div class="ios-row ${hl==="add"?"hl":""}"><b>Agregar a inicio</b><span>⊞</span></div><div class="ios-row">Buscar en la página<span>⌕</span></div></div>`,
+  addHome: () => `${SB()}<div class="body" style="background:#F2F2F7"><div class="row" style="justify-content:space-between;color:#007AFF;font-size:10px"><span>Cancelar</span><b style="color:#000">Agregar a inicio</b><span class="hl" style="font-weight:700">Agregar</span></div><div class="ios-row" style="margin-top:8px;justify-content:flex-start;gap:8px"><span class="app g64" style="color:#000"><i></i></span><span><b>Garaje 64</b><br>kalhi420.github.io</span></div></div>`,
+  home: () => `<div class="home">${Array.from({length:11},(_,i)=>`<div class="app"><i></i>App</div>`).join("")}<div class="app g64 hl"><i></i>Garaje 64</div></div>`,
+  garage: (hl) => garage(hl),
+  settings: (hl) => `${SB(true)}${AH}<div class="body"><div class="sm">Configuración</div><div class="h">Ajustes</div><div class="card"><b>Dónde se guarda</b><div class="seg ${hl==="mode"?"hl":""}"><span class="${hl==="cloud"?"":"on"}">Mi cuenta</span><span class="${hl==="cloud"?"on hl":""}">Compartida</span><span>Este dispositivo</span></div><span style="color:#5A6B7A;font-size:9px">Tu colección se guarda en tu cuenta de claude.ai.</span><div class="b ${hl==="copy"?"hl":""}">Pasar autos de este navegador a mi cuenta</div></div><div class="card"><b>Respaldo</b><div class="row"><span class="b ${hl==="export"?"hl":""}">Exportar (.json)</span><span class="b ${hl==="csv"?"hl":""}">Excel (.csv)</span></div><div class="b ${hl==="import"?"hl":""}">Importar respaldo</div></div></div>${BAR("", "")}`,
+  scan: (hl) => `${SB(true)}${AH}<div class="dim" style="background:rgba(0,0,0,.2)"></div><div class="body"></div><div class="sheet" style="background:#EEF1F4"><div class="grab"></div><div class="h" style="font-size:15px">Escanear blíster</div><div class="card ${hl==="photo"?"hl":""}" style="border:2px dashed #E8530E;align-items:center;padding:12px;text-align:center"><b>▥ Tomar foto del código</b><span style="font-size:8px;color:#5A6B7A">Enfoca el código junto al gancho, ej. <b style="font-family:monospace">HYW43-N7C5</b></span></div><div class="b ${hl==="gallery"?"hl":""}">Usar una foto de la galería</div><div class="row"><span class="inp ${hl==="manual"?"hl":""}" style="flex:1">O escribe el código: HYW43</span><span class="b d">Buscar</span></div></div>`,
+  blister: () => `<div class="cam">${SB()}<div class="vf" style="background:#D9D2C3;border-color:rgba(255,255,255,.8)"><div style="color:#222;font-family:Arial,sans-serif;text-align:center"><div style="font-size:15px;letter-spacing:.5px" class="hl">HYW43-N7C5</div><div style="margin:10px auto 0;width:44px;height:18px;border-radius:9px;background:#111"></div><div style="font-family:var(--f-display);font-weight:900;font-size:16px;margin-top:14px">HONDA MOTOCOMPO</div></div></div><div class="shutter hl round"></div></div>`,
+  reading: () => `${SB(true)}${AH}<div class="dim" style="background:rgba(0,0,0,.2)"></div><div class="body"></div><div class="sheet" style="background:#EEF1F4"><div class="grab"></div><div class="card"><div class="row"><span style="width:40px;height:40px;border-radius:6px;background:#D9D2C3;flex:none"></span><span style="width:12px;height:12px;border:2px solid #CBD3DB;border-top-color:#E8530E;border-radius:50%"></span><span>Leyendo el código del blíster…</span></div></div></div>`,
+  quick: (hl) => `${SB(true)}${AH}<div class="dim" style="background:rgba(0,0,0,.2)"></div><div class="body"></div><div class="sheet" style="background:#EEF1F4;top:46px"><div class="grab"></div><div class="h" style="font-size:15px">Agregar a mi garaje</div><div class="card" style="border-left:3px solid #E8530E"><b style="font-family:monospace">HYW43</b><b style="font-size:12px">Honda Motocompo</b><span style="color:#5A6B7A;font-size:9px">2025 · #181/250 · HW Moto · Rojo</span><span style="color:#1B4F9C;font-size:9px;font-weight:700">No es este auto</span></div><div class="row"><div class="mc" style="width:90px"><div class="ph"><i style="--c:#C8102E"></i></div></div><div style="display:flex;flex-direction:column;gap:4px"><span class="b ${hl==="photo"?"hl":""}">Tomar foto</span><span class="b">Galería</span></div></div><span class="sm">Pagado (S/)</span><div class="inp ${hl==="price"?"hl":""}" style="color:#14202B">7.90</div><div class="b">Más datos (estado, valor, tienda…)</div><div class="b o ${hl==="save"?"hl":""}">Guardar en mi garaje</div></div>`,
+  tap: () => `${SB(true)}${AH}<div class="dim" style="background:rgba(0,0,0,.2)"></div><div class="body"></div><div class="sheet" style="background:#EEF1F4;top:60px"><div class="grab"></div><b>No encontré el código automáticamente.</b><span style="font-size:9px">Toca el código en la foto.</span><div style="background:#D9D2C3;border-radius:8px;height:150px;position:relative;display:grid;place-items:center"><span style="font-family:Arial;font-size:12px;color:#222">HYW43-N7C5</span><span class="hl round" style="position:absolute;left:45%;top:44%;width:22px;height:22px;border-radius:50%"></span></div></div>`,
+  iosPicker: (hl) => `${SB()}<div class="dim"></div><div class="body"></div><div class="sheet"><div class="grab"></div><div class="ios-row">Fototeca<span>🖼</span></div><div class="ios-row ${hl==="cam"?"hl":""}"><b>Tomar foto</b><span>📷</span></div><div class="ios-row">Seleccionar archivo<span>📁</span></div></div>`,
+  camera: () => `<div class="cam">${SB()}<div class="vf"><div class="barcode"></div></div><div class="shutter hl round"></div></div>`,
+  usePhoto: () => `<div class="cam">${SB()}<div class="vf" style="border-color:transparent"><div class="barcode"></div></div><div class="row" style="justify-content:space-between;padding:0 16px 22px;font-size:11px"><span>Repetir</span><b class="hl" style="padding:2px 4px">Usar foto</b></div></div>`,
+  scanNew: (hl) => `${SB(true)}${AH}<div class="dim" style="background:rgba(0,0,0,.2)"></div><div class="body"></div><div class="sheet" style="background:#EEF1F4"><div class="grab"></div><div class="card" style="border-left:3px solid #E8530E"><span class="sm">Código leído</span><b style="font-family:monospace;font-size:13px">194735555555</b><span style="font-size:9px">Código nuevo. Búscalo en el catálogo.</span><div class="inp ${hl==="search"?"hl":""}">supra</div><div class="b ${hl==="pick"?"hl":""}" style="text-align:left">'20 Toyota GR Supra<br><span style="font-weight:500;color:#5A6B7A">2026 · #157 · Then and Now</span></div><div class="b" style="text-align:left">'82 Toyota Supra<br><span style="font-weight:500;color:#5A6B7A">2026 · #190 · Then and Now</span></div></div></div>`,
+  scanKnown: () => `${SB(true)}${AH}<div class="dim" style="background:rgba(0,0,0,.2)"></div><div class="body"></div><div class="sheet" style="background:#EEF1F4"><div class="grab"></div><div class="card" style="border-left:3px solid #E8530E"><span class="sm">Código HYW43</span><b>Ya lo tienes: Honda Motocompo (Rojo) ×1</b><div class="row"><span class="b">Ver ficha</span><span class="b o hl">Sumar una copia</span></div></div></div>`,
+  form: (hl) => `${SB(true)}${AH}<div class="dim" style="background:rgba(0,0,0,.2)"></div><div class="body"></div><div class="sheet" style="background:#EEF1F4;top:40px"><div class="grab"></div><div class="h" style="font-size:15px">Agregar a mi garaje</div><div class="seg"><span class="on">Lo tengo</span><span>Lo busco</span></div><div class="row"><div class="mc" style="width:70px"><div class="ph"><i></i></div></div><div style="display:flex;flex-direction:column;gap:4px"><span class="b ${hl==="photo"?"hl":""}">Tomar foto</span><span class="b">Galería</span></div></div><div class="inp" style="color:#14202B">'20 Toyota GR Supra</div><div class="grid2"><div class="inp">Then and Now</div><div class="inp">2026</div><div class="inp">Case —</div><div class="inp">157/250</div></div><div class="seg ${hl==="cond"?"hl":""}"><span class="on">En blíster</span><span>Suelto</span></div><div class="grid2"><div class="inp ${hl==="price"?"hl":""}">Pagado S/ 7.90</div><div class="inp ${hl==="price"?"hl":""}">Valor S/ 12.00</div></div><div class="inp ${hl==="loc"?"hl":""}">Ubicación: Vitrina 1</div><div class="b o ${hl==="save"?"hl":""}">Guardar en mi garaje</div></div>`,
+  catalog: (hl) => `${SB(true)}${AH}<div class="body"><div class="sm">Línea principal · 501 modelos</div><div class="h">Catálogo</div><div class="card ${hl==="prog"?"hl":""}"><div class="row" style="justify-content:space-between"><b>HW J-Imports 2026</b><b>2 / 10</b></div><div class="pb"><i style="width:20%"></i></div></div><div class="row"><span class="inp" style="flex:1">Buscar…</span><span class="b ${hl==="series"?"hl":""}">Serie ▾</span></div><div class="row"><span class="b ${hl==="year"?"hl":""}">2026</span><span class="b">2025</span><span class="b ${hl==="miss"?"hl":""}">Me faltan</span></div><div class="card" style="gap:0">${[["060","Toyota Prius Custom"],["061","Mazda RX-7"],["088","Nissan Skyline 2000 GT-R"]].map(([n,t],i)=>`<div class="row" style="padding:5px 0;border-bottom:1px solid #E2E7EC"><b style="font-family:var(--f-display);font-size:14px;width:26px">${n}</b><span style="flex:1"><b>${t}</b><br><span style="color:#1B4F9C">Ver fotos</span></span><span class="b o ${i===0&&hl==="have"?"hl":""}">Lo tengo</span><span class="b ${i===1&&hl==="want"?"hl":""}">Lo busco</span></div>`).join("")}</div></div>${BAR("Catálogo","")}`,
+  detail: (hl) => `${SB(true)}${AH}<div class="dim" style="background:rgba(0,0,0,.2)"></div><div class="body"></div><div class="sheet" style="background:#EEF1F4;top:50px"><div class="grab"></div><div class="h" style="font-size:15px">'18 Honda Civic Type R</div><div class="mc"><div class="ph"><i style="--c:#C8102E"></i></div></div><span><span class="tag w">En wishlist</span></span><div class="prow"><span>Serie</span><b>Nightspeed</b></div><div class="prow"><span>N.º</span><b>011/250</b></div><div class="row"><span class="b o ${hl==="found"?"hl":""}" style="flex:1">¡Lo encontré!</span><span class="b ${hl==="trade"?"hl":""}">Intercambio</span><span class="b d">Editar</span></div></div>`,
+  detailOwned: (hl) => `${SB(true)}${AH}<div class="dim" style="background:rgba(0,0,0,.2)"></div><div class="body"></div><div class="sheet" style="background:#EEF1F4;top:50px"><div class="grab"></div><div class="h" style="font-size:15px">Nissan Skyline GT-R</div><div class="mc"><div class="ph"><i style="--c:#A9B4BE"></i></div></div><div class="prow"><span>Cantidad</span><b>3</b></div><div class="prow"><span>Ubicación</span><b>Caja B</b></div><div class="row"><span class="b ${hl==="plus"?"hl":""}">+1 copia</span><span class="b ${hl==="minus"?"hl":""}">−1 copia</span><span class="b ${hl==="trade"?"hl":""}">Para intercambio</span></div></div>`,
+  lists: (hl) => `${SB(true)}${AH}<div class="body"><div class="sm">Organiza sin límites</div><div class="h">Listas</div><div class="row"><span class="inp ${hl==="new"?"hl":""}" style="flex:1">Nombre de la lista</span><span class="b d ${hl==="new"?"hl":""}">Crear</span></div><div class="card" style="gap:0">${["Vitrina principal","Para regalar","Colección JDM"].map((l,i)=>`<div class="row" style="padding:5px 0;border-bottom:1px solid #E2E7EC"><b style="flex:1">${l}</b><span class="b ${i===2&&hl==="see"?"hl":""}">Ver</span><span class="b">Renombrar</span></div>`).join("")}</div><div class="h" style="font-size:14px">Ubicaciones</div><div class="card" style="gap:0"><div class="prow ${hl==="loc"?"hl":""}"><b>Vitrina 1</b><span>5 autos</span></div><div class="prow"><b>Caja B</b><span>3 autos</span></div></div></div>${BAR("Listas","")}`,
+  stats: (hl) => `${SB(true)}${AH}<div class="body"><div class="sm">Tu colección en números</div><div class="h">Valor</div><div class="grid2"><div class="kpi"><span class="sm">Autos</span><b>8</b></div><div class="kpi"><span class="sm">Invertido</span><b>S/ 61.10</b></div><div class="kpi ${hl==="value"?"hl":""}"><span class="sm">Valor estimado</span><b>S/ 376.00</b></div><div class="kpi ${hl==="value"?"hl":""}"><span class="sm">Ganancia</span><b style="color:#1E7B4A">+S/ 314.90</b></div><div class="kpi"><span class="sm">TH</span><b style="color:#1B4F9C">1</b></div><div class="kpi"><span class="sm">Super TH</span><b style="color:#B8860B">2</b></div></div><div class="card ${hl==="chart"?"hl":""}"><b>Autos por año</b><div class="row" style="align-items:flex-end;height:44px;gap:10px;padding-left:20px"><i style="width:22px;height:30%;background:#E8530E;display:block"></i><i style="width:22px;height:100%;background:#E8530E;display:block"></i></div></div></div>${BAR("Valor","")}`,
+  confirm: () => `${SB(true)}${AH}<div class="dim"></div><div class="body"></div><div class="sheet"><div class="grab"></div><b style="text-align:center">¿Guardar archivo?</b><span style="text-align:center;font-size:9px;color:#5A6B7A">garaje64-respaldo-2026-11-06.json · 220 KB</span><div class="ios-row blue hl">Guardar</div><div class="ios-row blue">Cancelar</div></div>`,
+  iosShare: () => `${SB()}<div class="dim"></div><div class="body"></div><div class="sheet"><div class="grab"></div><div class="ios-row"><b>garaje64-respaldo.json</b><span>JSON</span></div><div class="row" style="justify-content:space-around;padding:6px 0">${["AirDrop","Mensajes","Mail","WhatsApp"].map(a=>`<span class="app" style="color:#000"><i style="background:#D1D1D6;width:32px;height:32px"></i>${a}</span>`).join("")}</div><div class="ios-row hl"><b>Guardar en Archivos</b><span>📁</span></div></div>`,
+  share: (hl) => `${SB()}<div class="body" style="background:#fff"><div class="row" style="justify-content:space-between"><b>Garaje 64</b><span class="b ${hl==="share"?"hl":""}" style="color:#14202B">Compartir</span></div><div style="flex:1;border:1px solid #E2E7EC;border-radius:8px;overflow:hidden;opacity:.6">${garage("")}</div></div>${hl==="link"?`<div class="dim"></div><div class="sheet" style="background:#fff"><div class="grab"></div><b>Compartir Garaje 64</b><div class="ios-row" style="background:#F2F2F7">Cualquiera con el enlace</div><div class="b d hl">Copiar enlace</div></div>`:""}`,
+  whatsapp: () => `${SB()}<div class="body" style="background:#E9DFD5"><div class="row" style="background:#F6F6F6;margin:-8px -10px 4px;padding:6px 10px"><b>Carlos</b></div><div style="align-self:flex-end;background:#DCF8C6;border-radius:8px;padding:6px 8px;max-width:80%;font-size:10px">Mira mi colección 🏎️<br><span style="color:#1B4F9C">claude.ai/artifact/…</span></div></div>`,
+};
+
+/* ---------- capítulos ---------- */
+const CH = [
+  { id:"abrir", title:"Instalar la app", intro:"Instálala en tu pantalla de inicio: así tus autos quedan guardados en el teléfono para siempre, sin cuenta.", steps:[
+    ["Abre la dirección en Safari","Escribe kalhi420.github.io/garaje64 en Safari. Si te llega por WhatsApp, toca los tres puntos y elige “Abrir en Safari”.", ()=>S.safari("")],
+    ["Toca Compartir","Es el cuadrado con flecha hacia arriba, en la barra de abajo.", ()=>S.safari("share")],
+    ["Elige “Agregar a inicio”","Desliza la lista hacia abajo si no lo ves al principio.", ()=>S.shareSheet("add")],
+    ["Confirma con “Agregar”","Aparece el ícono de Garaje 64 en tu pantalla de inicio.", ()=>S.addHome()],
+    ["Ábrela siempre desde el ícono","Desde ahí tus autos quedan guardados aunque pasen días o semanas, y funciona sin internet.", ()=>S.home()],
+  ], tip:["En Android","Abre la dirección en Chrome, toca los tres puntos ⋮ y elige “Instalar app” (o “Agregar a pantalla principal”). Igual que en iPhone, ábrela siempre desde el ícono: lo que guardes en una pestaña del navegador se guarda aparte y el teléfono puede borrarlo."], warn:true },
+  { id:"guardar", title:"Dónde se guarda", intro:"Tus autos se guardan en tu propio teléfono. No necesitas cuenta ni internet.", steps:[
+    ["Revisa en Ajustes","Toca el engranaje. Si dice “App instalada”, todo está guardado de forma permanente.", ()=>S.settings("")],
+    ["Haz un respaldo de vez en cuando","Ajustes → Exportar respaldo → “Guardar en Archivos”. Te sirve si cambias de teléfono.", ()=>S.settings("export")],
+    ["Para pasar tus autos a otro teléfono","En el teléfono nuevo instala la app y usa Ajustes → Importar respaldo.", ()=>S.settings("import")],
+  ], tip:["Ojo","Si borras la app de la pantalla de inicio, se borran sus datos. Exporta un respaldo antes."], warn:true },
+  { id:"escanear", title:"Escanear un blíster", intro:"Toma una foto del código del blíster: la app reconoce el auto y tú solo pones la foto y el precio.", steps:[
+    ["Toca el botón naranja","Está en el centro de la barra de abajo.", ()=>S.garage("scan")],
+    ["Toca “Tomar foto del código”","La primera vez iOS te pide permiso para usar la cámara: acepta.", ()=>S.scan("photo")],
+    ["Enfoca el código junto al gancho","Es el código corto arriba del blíster, por ejemplo HYW43-N7C5. Que se vea nítido y sin reflejos.", ()=>S.blister()],
+    ["Toca “Usar foto” y espera","La app lee el código en tu teléfono. La primera vez tarda unos segundos más porque descarga el lector.", ()=>S.reading()],
+    ["Se abre la ficha del auto","Nombre, serie, número, color y si es TH o Super TH ya vienen llenos. Revisa que sea el auto correcto.", ()=>S.quick("")],
+    ["Toma la foto de tu auto","Toca “Tomar foto” para que en tu garaje aparezca tu propio auto.", ()=>S.quick("photo")],
+    ["Pon el precio y guarda","Escribe lo que pagaste y toca “Guardar en mi garaje”. Listo.", ()=>S.quick("save")],
+    ["Si ya lo tenías, te avisa","Al escanear un auto que ya está en tu garaje, te muestra cuántos tienes y puedes sumar una copia.", ()=>S.scanKnown()],
+    ["Si no lo lee, toca el código","Si la foto salió difícil, la app te pide tocar el código en la foto y vuelve a intentarlo ahí.", ()=>S.tap()],
+  ], tip:["Sin cámara","También puedes escribir el código (HYW43) en la casilla “O escribe el código” y la app abre la misma ficha. El código de barras también sirve: la primera vez que lo escaneas queda guardado."] },
+  { id:"catalogo", title:"Usar el catálogo", intro:"Los modelos de la línea principal 2025 y 2026, con tu avance.", steps:[
+    ["Abre Catálogo","Segundo botón de la barra de abajo.", ()=>S.catalog("")],
+    ["Filtra por año y por “Me faltan”","Así ves solo lo que te falta conseguir.", ()=>S.catalog("miss")],
+    ["Elige una serie","El medidor de arriba muestra cuánto te falta para completarla.", ()=>S.catalog("prog")],
+    ["Toca “Lo tengo”","Se abre la ficha con nombre, serie, número y case ya llenos.", ()=>S.catalog("have")],
+    ["O toca “Lo busco”","Lo agrega a tu wishlist al instante.", ()=>S.catalog("want")],
+  ], tip:["Fotos","“Ver fotos” abre la búsqueda en internet para que confirmes el modelo antes de comprarlo."] },
+  { id:"agregar", title:"Agregar un auto", intro:"Completa la ficha con lo que te interesa; solo el nombre es obligatorio.", steps:[
+    ["Toca “+ Agregar”","O llega desde el escáner o el catálogo con los datos ya puestos.", ()=>S.garage("add")],
+    ["Toma la foto de tu auto","“Tomar foto” abre la cámara; “Galería” usa una foto que ya tienes.", ()=>S.form("photo")],
+    ["Indica el estado","En blíster o suelto, y su condición.", ()=>S.form("cond")],
+    ["Precio y valor","Lo que pagaste y cuánto crees que vale hoy. Con eso se calcula tu ganancia.", ()=>S.form("price")],
+    ["Dónde lo guardas","Vitrina, caja o cajón. Te sugiere las ubicaciones que ya usaste.", ()=>S.form("loc")],
+    ["Toca Guardar","Aparece en tu garaje con su foto.", ()=>S.form("save")],
+  ], tip:["Atajo","El teclado numérico aparece solo en precio, año y cantidad."] },
+  { id:"wishlist", title:"Wishlist", intro:"Los autos que estás buscando y el momento de encontrarlos.", steps:[
+    ["Abre la wishlist","En Garaje, toca el filtro “Wishlist”.", ()=>S.garage("wish")],
+    ["Toca el auto y luego “¡Lo encontré!”","Pasa a tu garaje y sale de la wishlist automáticamente.", ()=>S.detail("found")],
+    ["Completa la compra","Precio, tienda y foto. La fecha se pone sola.", ()=>S.form("price")],
+  ], tip:["En la tienda","Si escaneas un auto que está en tu wishlist, la app te lo avisa en grande."] },
+  { id:"repetidos", title:"Repetidos e intercambio", intro:"Lleva la cuenta de copias y lo que puedes cambiar.", steps:[
+    ["Abre la ficha del auto","Toca su tarjeta en el garaje.", ()=>S.garage("")],
+    ["Suma o resta copias","“+1 copia” o “−1 copia”. La tarjeta muestra ×2, ×3…", ()=>S.detailOwned("plus")],
+    ["Márcalo para intercambio","Así lo encuentras rápido cuando quedes con otros coleccionistas.", ()=>S.detailOwned("trade")],
+    ["Revisa tus repetidos","Filtros “Repetidos” e “Intercambio” en el garaje.", ()=>S.garage("dupes")],
+  ] },
+  { id:"listas", title:"Listas y ubicaciones", intro:"Organiza como quieras, sin límite de listas.", steps:[
+    ["Crea una lista","En Listas escribe el nombre y toca “Crear”.", ()=>S.lists("new")],
+    ["Agrega autos a la lista","Desde la ficha del auto, en “Listas”. Un auto puede estar en varias.", ()=>S.form("")],
+    ["Mira una lista","Toca “Ver” y el garaje se filtra.", ()=>S.lists("see")],
+    ["Busca por ubicación","Toca una ubicación para ver qué hay en esa vitrina o caja.", ()=>S.lists("loc")],
+  ] },
+  { id:"valor", title:"Valor y estadísticas", intro:"Cuánto invertiste y cuánto vale tu colección.", steps:[
+    ["Abre Valor","Cuarto botón de la barra de abajo.", ()=>S.stats("")],
+    ["Revisa valor y ganancia","Se calcula con el precio y el valor estimado de cada auto.", ()=>S.stats("value")],
+    ["Mira los gráficos","Autos por año, por serie y por case, y tus autos más valiosos.", ()=>S.stats("chart")],
+  ], tip:["Para que sea exacto","Actualiza el valor estimado de tus TH y Super TH de vez en cuando."] },
+  { id:"respaldo", title:"Respaldo", intro:"Guarda una copia de tu colección en Archivos o iCloud.", steps:[
+    ["En Ajustes, toca “Exportar”",".json guarda todo con fotos. .csv abre en Excel o Numbers.", ()=>S.settings("export")],
+    ["Confirma “Guardar”","Te muestra el nombre y tamaño del archivo.", ()=>S.confirm()],
+    ["Elige “Guardar en Archivos”","Escoge iCloud Drive para no perderlo si cambias de iPhone.", ()=>S.iosShare()],
+    ["Para recuperar: “Importar respaldo”","Elige el archivo .json desde Archivos. Solo suma los autos que falten.", ()=>S.settings("import")],
+  ], tip:["Ojo","Si guardas en el iPhone, Safari puede borrar los datos de páginas que no abres en semanas. Haz un respaldo cada cierto tiempo."], warn:true },
+  { id:"compartir", title:"Compartir con amigos", intro:"Cada amigo instala la app en su teléfono y tiene su propia colección.", steps:[
+    ["Envía la dirección","Por WhatsApp o Mensajes: kalhi420.github.io/garaje64", ()=>S.whatsapp()],
+    ["Que la abra en Safari","Si la abre dentro de WhatsApp, que toque los tres puntos y “Abrir en Safari”.", ()=>S.safari("")],
+    ["Que la agregue a inicio","Compartir → “Agregar a inicio”, igual que en el capítulo 1.", ()=>S.shareSheet("add")],
+  ], tip:["Intercambios","Para cambiar repetidos, cada uno marca “Para intercambio” en sus autos y comparan la lista con el filtro Intercambio."] },
+];
+
+/* ---------- estado ---------- */
+const store = { get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} } };
+let done = new Set(store.get("g64man.done", []));
+let ci = 0, si = 0;
+const hashIdx = () => Math.max(0, CH.findIndex(c => "#"+c.id === location.hash));
+
+function renderToc(){
+  document.getElementById("toc").innerHTML = CH.map((c,i)=>`<button class="chip ${done.has(c.id)?"done":""}" type="button" data-ch="${i}" aria-current="${i===ci}"><span class="n">${i+1}</span>${c.title}</button>`).join("");
+  const n = CH.filter(c=>done.has(c.id)).length;
+  document.getElementById("pTxt").textContent = `${n} de ${CH.length} capítulos`;
+  document.getElementById("pBar").style.width = (n/CH.length*100)+"%";
+  const cur = document.querySelector(`.chip[data-ch="${ci}"]`); if(cur) cur.scrollIntoView({block:"nearest",inline:"center",behavior:"smooth"});
+}
+function render(){
+  const c = CH[ci], st = c.steps[si];
+  const phoneHTML = `<div class="phone" role="img" aria-label="Paso ${si+1}: ${st[0]}"><div class="screen"><div class="island"></div>${st[2]()}</div></div>`;
+  document.getElementById("chapter").innerHTML = `
+  <div class="chapter">
+    <div>
+      <div class="ch-head"><span class="label">Capítulo ${ci+1} de ${CH.length}</span><h2>${c.title}</h2><p>${c.intro}</p></div>
+      <div class="steps">${c.steps.map((s,i)=>`<button class="step" type="button" data-st="${i}" aria-pressed="${i===si}"><span class="k">${i+1}</span><span><b>${s[0]}</b><span class="d">${s[1]}</span></span></button>${i===si?`<div class="inline-phone">${phoneHTML}</div>`:""}`).join("")}</div>
+      ${c.tip?`<div class="tip ${c.warn?"warn":""}"><div><strong>${c.tip[0]}</strong><p>${c.tip[1]}</p></div></div>`:""}
+      <div class="nav-row">
+        <button class="btn" type="button" id="prev" ${ci===0&&si===0?"disabled":""}>‹ Anterior</button>
+        <button class="btn primary" type="button" id="next">${si<c.steps.length-1?"Siguiente paso ›":ci<CH.length-1?"Siguiente capítulo ›":"Terminar"}</button>
+        <button class="btn ${done.has(c.id)?"ok":""}" type="button" id="mark">${done.has(c.id)?"✓ Ya lo domino":"Marcar como aprendido"}</button>
+      </div>
+    </div>
+    <div class="phone-col">
+      ${phoneHTML}
+      <div class="cap">Paso ${si+1} de ${c.steps.length}: ${st[0]}</div>
+    </div>
+  </div>`;
+  renderToc();
+}
+function focusStep(){ if(window.innerWidth<=780){ const el=document.querySelector('.step[aria-pressed="true"]'); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); } }
+function go(c, s=0, scroll=true){
+  ci = c; si = s;
+  try{ history.replaceState(null,"","#"+CH[ci].id); }catch(e){}
+  render();
+  if(scroll) document.getElementById("chapter").scrollIntoView({behavior:"smooth",block:"start"});
+}
+document.getElementById("copyUrl").onclick = async e => {
+  const b = e.currentTarget;
+  try{ await navigator.clipboard.writeText("https://kalhi420.github.io/garaje64/"); b.textContent = "Copiado"; }
+  catch(err){ const r = document.createRange(); r.selectNodeContents(document.getElementById("appUrl")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = "Selecciónalo y copia"; }
+  setTimeout(() => b.textContent = "Copiar", 2200);
+};
+document.addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b) return;
+  if(b.dataset.ch!==undefined) return go(+b.dataset.ch);
+  if(b.dataset.st!==undefined){ si = +b.dataset.st; render(); focusStep(); return; }
+  if(b.id==="next"){
+    const c = CH[ci];
+    if(si < c.steps.length-1){ si++; render(); focusStep(); }
+    else { done.add(c.id); store.set("g64man.done",[...done]); if(ci < CH.length-1) go(ci+1); else render(); }
+    return;
+  }
+  if(b.id==="prev"){ if(si>0){ si--; render(); } else if(ci>0) go(ci-1, CH[ci-1].steps.length-1); return; }
+  if(b.id==="mark"){ const id = CH[ci].id; done.has(id) ? done.delete(id) : done.add(id); store.set("g64man.done",[...done]); render(); }
+});
+window.addEventListener("hashchange", () => { const i = hashIdx(); if(i!==ci) go(i,0,false); });
+ci = hashIdx(); render();
+</script>
+
+</body>
+</html>
