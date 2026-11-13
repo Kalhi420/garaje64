@@ -1,0 +1,1307 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14202B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Garaje 64">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<script>window.G64_SITE = true; if("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
+<style>
+/* lo que en claude.ai pone el contenedor de la página */
+html{color-scheme:light;-webkit-text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.45 system-ui,-apple-system,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Garaje 64</title>
+</head>
+<body>
+
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Layout: app de bolsillo — cabecera fija, cuadrícula de "blísters", barra inferior con botón de escaneo al centro */
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --sunken:#E2E7EC; --line:#CBD3DB;
+  --ink:#14202B; --muted:#5A6B7A; --accent:#E8530E; --accent-ink:#FFFFFF;
+  --blue:#1B4F9C; --gold:#B8860B; --ok:#1E7B4A; --warn:#B4530A; --bad:#B42318;
+  --shadow:0 1px 2px rgba(20,32,43,.08),0 4px 14px rgba(20,32,43,.06);
+  --f-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-label:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --r:12px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F161D; --surface:#18222C; --sunken:#121A22; --line:#2A3946;
+  --ink:#E8EEF3; --muted:#93A4B3; --accent:#FF6A26; --accent-ink:#1A0A02;
+  --blue:#6FA3F0; --gold:#E2B33C; --ok:#4CC383; --warn:#F0A04B; --bad:#F2716A;
+  --shadow:0 1px 2px rgba(0,0,0,.4); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F161D; --surface:#18222C; --sunken:#121A22; --line:#2A3946;
+  --ink:#E8EEF3; --muted:#93A4B3; --accent:#FF6A26; --accent-ink:#1A0A02;
+  --blue:#6FA3F0; --gold:#E2B33C; --ok:#4CC383; --warn:#F0A04B; --bad:#F2716A;
+  --shadow:0 1px 2px rgba(0,0,0,.4); color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--ink)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* cabecera */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--ink);color:#fff}
+header.top .wrap{display:flex;align-items:center;gap:12px;padding-block:10px}
+.brand{font-family:var(--f-display);font-weight:900;font-size:28px;letter-spacing:.5px;line-height:1;display:flex;align-items:baseline;gap:6px;text-transform:uppercase}
+.brand b{color:#FF6A26}
+.brand small{font-family:var(--f-label);font-size:11px;letter-spacing:1.5px;font-weight:600;opacity:.65}
+.mode{white-space:nowrap;margin-left:auto;font-family:var(--f-label);font-size:12px;letter-spacing:.8px;text-transform:uppercase;border:1px solid rgba(255,255,255,.3);border-radius:99px;padding:4px 10px;background:transparent;color:#fff;display:flex;gap:6px;align-items:center}
+.mode i{width:8px;height:8px;border-radius:50%;background:#4CC383;display:inline-block}
+.mode.cloud i{background:#6FA3F0}
+@media(max-width:430px){.brand small{display:none}.mode{padding:6px 8px}.mode span{display:none}}
+.gear{background:transparent;border:0;color:#fff;width:36px;height:36px;display:grid;place-items:center;border-radius:50%}
+.gear svg{width:22px;height:22px}
+/* catálogo */
+.prog{height:10px;background:var(--sunken);border-radius:5px;overflow:hidden;margin-top:6px}
+.prog i{display:block;height:100%;background:var(--ok);border-radius:5px}
+.cat{display:flex;flex-direction:column;margin-top:12px;background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow)}
+.crow{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}
+.crow:last-child{border-bottom:0}
+.crow .no{font-family:var(--f-display);font-weight:800;font-size:20px;line-height:1;font-variant-numeric:tabular-nums}
+.crow .no small{display:block;font-family:var(--f-label);font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px}
+.crow .tx{min-width:0}
+.crow .tx b{display:block;line-height:1.25;overflow-wrap:anywhere}
+.crow .tx span{font-size:13px;color:var(--muted)}
+.crow .tx a{font-size:13px;color:var(--blue);margin-left:6px}
+.crow .tx .codes{display:block;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;letter-spacing:.3px}
+.crow .act{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.crow.have{background:color-mix(in srgb,var(--ok) 7%,var(--surface))}
+.have-pill{font-family:var(--f-label);font-weight:700;font-size:13px;color:var(--ok);border:1px solid currentColor;border-radius:99px;padding:5px 10px;background:transparent}
+.want-pill{font-family:var(--f-label);font-weight:700;font-size:13px;color:var(--accent);border:1px solid currentColor;border-radius:99px;padding:5px 10px;background:transparent}
+@media(max-width:420px){.crow{grid-template-columns:44px 1fr}.crow .act{grid-column:2;justify-content:flex-start}}
+
+main{padding-block:16px 110px}
+h1,h2,h3{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.4px;margin:0;text-wrap:balance;line-height:1.05}
+h1{font-size:34px;font-weight:900}
+h2{font-size:24px;font-weight:800}
+h3{font-size:18px;font-weight:800}
+.label{font-family:var(--f-label);text-transform:uppercase;letter-spacing:1px;font-size:12px;font-weight:600;color:var(--muted)}
+.muted{color:var(--muted)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.stack{display:flex;flex-direction:column;gap:12px}
+
+/* barra de búsqueda y filtros */
+.search{display:flex;gap:8px;margin-block:12px}
+.search input{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+.search select{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:0 8px;max-width:42%}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 12px;font-family:var(--f-label);font-weight:600;font-size:14px;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip .n{opacity:.6;margin-left:4px;font-variant-numeric:tabular-nums}
+
+.banner{background:var(--sunken);border:1px dashed var(--line);border-radius:var(--r);padding:12px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.banner p{margin:0;flex:1;min-width:180px}
+.banner.warn{background:color-mix(in srgb,var(--accent) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));border-style:solid}
+
+/* cuadrícula de autos */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px;margin-top:14px}
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;text-align:left;border:0;padding:0;display:flex;flex-direction:column;min-width:0;position:relative}
+.card .ph{aspect-ratio:4/3;max-width:100%;background:var(--sunken);display:grid;place-items:center;position:relative;overflow:hidden}
+.card .ph img{width:100%;height:100%;object-fit:cover}
+.card .ph svg{width:78%;height:auto}
+.card .meta{padding:9px 10px 11px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.card .nm{font-weight:700;line-height:1.2;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.card .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tags{position:absolute;top:6px;left:6px;right:6px;display:flex;gap:4px;justify-content:space-between;pointer-events:none}
+.tags .l,.tags .r{display:flex;gap:4px}
+.tag{font-family:var(--f-label);font-weight:700;font-size:11px;letter-spacing:.6px;padding:2px 6px;border-radius:5px;background:var(--surface);color:var(--ink);text-transform:uppercase;box-shadow:0 1px 2px rgba(0,0,0,.15);white-space:nowrap}
+.tag.th{background:var(--blue);color:#fff}
+.tag.sth{background:var(--gold);color:#1a1200}
+.tag.wish{background:var(--accent);color:var(--accent-ink)}
+.tag.qty{background:var(--ink);color:var(--bg)}
+.tag.ex{background:var(--sunken);color:var(--muted)}
+.empty{text-align:center;padding:48px 16px;color:var(--muted)}
+.empty h2{color:var(--ink);margin-bottom:6px}
+
+/* barra inferior */
+nav.bottom{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+nav.bottom .in{max-width:620px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);align-items:end}
+nav.bottom button{background:none;border:0;padding:8px 2px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--f-label);font-size:12px;font-weight:600;letter-spacing:.4px;color:var(--muted);text-transform:uppercase}
+nav.bottom button svg{width:24px;height:24px}
+nav.bottom button[aria-current="page"]{color:var(--accent)}
+nav.bottom .scan{position:relative;top:-14px}
+nav.bottom .scan span.dot{width:58px;height:58px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;box-shadow:0 4px 14px rgba(232,83,14,.4);border:4px solid var(--bg)}
+nav.bottom .scan{color:var(--ink)}
+
+/* botones */
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 14px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.dark{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.danger{color:var(--bad);border-color:currentColor;background:transparent}
+.btn.sm{padding:6px 10px;font-size:14px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.block{width:100%}
+
+/* hoja modal */
+.scrim{position:fixed;inset:0;background:rgba(10,16,22,.55);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:640px;max-height:92%;overflow-y:auto;border-radius:18px 18px 0 0;padding:6px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+@media (min-width:700px){.scrim{align-items:center}.sheet{border-radius:18px;max-height:88%}}
+.grab{width:42px;height:5px;border-radius:5px;background:var(--line);margin:6px auto 12px}
+.sheet-h{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.sheet-h h2{flex:1}
+.x{background:var(--sunken);border:0;width:34px;height:34px;border-radius:50%;font-size:18px;line-height:1}
+
+/* formulario */
+.form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form .full{grid-column:1/-1}
+.f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.f input,.f select,.f textarea{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:10px;width:100%;min-width:0}
+.f textarea{min-height:70px;resize:vertical}
+.seg{display:flex;background:var(--sunken);border-radius:10px;padding:3px;gap:3px}
+.seg button{flex:1;border:0;background:transparent;border-radius:8px;padding:8px 4px;font-family:var(--f-label);font-weight:600;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--surface);box-shadow:var(--shadow);color:var(--accent)}
+.photo-in{display:flex;gap:12px;align-items:center}
+.photo-in .pv{width:112px;aspect-ratio:4/3;border-radius:10px;background:var(--sunken);overflow:hidden;display:grid;place-items:center;flex:none}
+.photo-in .pv img{width:100%;height:100%;object-fit:cover}
+.photo-in .pv svg{width:80%}
+.filebtn{position:relative;overflow:hidden}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.check{display:flex;gap:8px;align-items:center;padding:6px 0}
+.check input{width:20px;height:20px;accent-color:var(--accent)}
+.listpick{display:flex;flex-wrap:wrap;gap:6px}
+.form-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.form-actions .btn{flex:1}
+.form.quick .adv{display:none}
+.form.quick .f{grid-column:1/-1}
+.form.quick .photo-in .pv{width:150px}
+.idcard{background:var(--surface);border-radius:12px;padding:12px;margin-bottom:12px;display:flex;flex-direction:column;gap:4px;border-left:4px solid var(--accent)}
+.idcard .nm{font-size:18px;line-height:1.2}
+.linkbtn{background:none;border:0;padding:4px 0 0;color:var(--blue);font-weight:600;text-align:left;align-self:flex-start}
+.tapwrap{position:relative;border-radius:12px;overflow:hidden;background:#000;cursor:crosshair;touch-action:manipulation}
+.tapwrap img{display:block;width:100%;max-height:52vh;object-fit:contain}
+.tapdot{position:absolute;width:28px;height:28px;margin:-14px 0 0 -14px;border:3px solid var(--accent);border-radius:50%;pointer-events:none}
+.choice{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;width:100%}
+.thumbrow{display:flex;gap:10px;align-items:center}
+.thumbrow img{width:72px;height:72px;object-fit:cover;border-radius:8px;flex:none}
+.spin{width:18px;height:18px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;flex:none}
+@media (prefers-reduced-motion:no-preference){.spin{animation:sp 0.8s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}}
+.confirm{background:var(--sunken);border-radius:10px;padding:12px;margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.confirm p{margin:0;flex:1;min-width:160px}
+
+/* detalle */
+.hero-ph{aspect-ratio:4/3;max-width:100%;border-radius:14px;overflow:hidden;background:var(--sunken);display:grid;place-items:center;position:relative}
+.hero-ph img{width:100%;height:100%;object-fit:cover}
+.hero-ph svg{width:70%}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border-radius:12px;overflow:hidden;margin-top:12px}
+.specs div{background:var(--surface);padding:9px 11px;min-width:0}
+.specs dt{font-family:var(--f-label);text-transform:uppercase;font-size:11px;letter-spacing:1px;color:var(--muted);font-weight:600}
+.specs dd{margin:0;font-weight:600;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+
+/* paneles */
+.panel{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:14px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+@media(min-width:640px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:var(--surface);border-radius:var(--r);padding:12px;box-shadow:var(--shadow);min-width:0}
+.kpi .v{font-family:var(--f-display);font-weight:800;font-size:30px;line-height:1;margin-top:4px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.kpi .v.pos{color:var(--ok)} .kpi .v.neg{color:var(--bad)}
+.bars{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+.bar{display:grid;grid-template-columns:minmax(70px,34%) 1fr 36px;gap:8px;align-items:center;font-size:14px}
+.bar .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .track{height:12px;background:var(--sunken);border-radius:3px;overflow:hidden}
+.bar .fill{height:100%;background:var(--accent);border-radius:3px}
+.bar .n{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.cols{display:grid;gap:12px;margin-top:12px}
+@media(min-width:720px){.cols{grid-template-columns:1fr 1fr}}
+.list-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.list-row:last-child{border-bottom:0}
+.list-row .nm{flex:1;font-weight:600;min-width:0;overflow-wrap:anywhere}
+.list-row input{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px}
+.yearchart{width:100%;height:auto;display:block}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:60;font-weight:600;max-width:calc(100% - 32px);text-align:center}
+.scanbox{display:grid;gap:10px}
+.scanbig{display:flex;flex-direction:column;align-items:center;gap:6px;padding:22px 12px;border:2px dashed var(--accent);border-radius:14px;background:var(--surface);font-weight:700;text-align:center}
+.scanbig svg{width:46px;height:46px;color:var(--accent)}
+.result{background:var(--surface);border-radius:12px;padding:12px;border-left:4px solid var(--accent)}
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:600;letter-spacing:.5px}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .22s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+
+<header class="top"><div class="wrap">
+  <div class="brand">Garaje<b>64</b><small>1:64</small></div>
+  <button class="mode" id="modeBtn" type="button"><i></i><span id="modeTxt">Este dispositivo</span></button>
+  <button class="gear" id="gearBtn" type="button" aria-label="Ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></button>
+</div></header>
+
+<main class="wrap" id="app"></main>
+
+<nav class="bottom" aria-label="Secciones"><div class="in">
+  <button data-go="garaje" aria-current="page" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6v10H3z"/><path d="M7 20v-6h10v6"/></svg>Garaje</button>
+  <button data-go="catalogo" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6a2 2 0 012 2v14a2 2 0 00-2-2H4zM20 4h-6a2 2 0 00-2 2v14a2 2 0 012-2h6z"/></svg>Catálogo</button>
+  <button data-go="scan" class="scan" type="button"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7V5a1 1 0 011-1h2M17 4h2a1 1 0 011 1v2M20 17v2a1 1 0 01-1 1h-2M7 20H5a1 1 0 01-1-1v-2M7 9v6M10 9v6M13 9v6M16 9v6"/></svg></span>Escanear</button>
+  <button data-go="stats" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Valor</button>
+  <button data-go="listas" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4" cy="6" r="1.4" fill="currentColor"/><circle cx="4" cy="12" r="1.4" fill="currentColor"/><circle cx="4" cy="18" r="1.4" fill="currentColor"/></svg>Listas</button>
+</div></nav>
+
+<div id="layer"></div>
+
+<script>
+"use strict";
+/* ============ utilidades ============ */
+const $ = (s, el=document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+const num = v => { const n = parseFloat(String(v).replace(",", ".")); return isFinite(n) ? n : 0; };
+const ls = { get(k,d){ try{ const v = localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} },
+             set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} } };
+let toastT;
+function toast(msg){ let t = $("#toast"); if(!t){ t=document.createElement("div"); t.id="toast"; t.className="toast"; t.setAttribute("role","status"); document.body.appendChild(t);} t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,2600); }
+
+const CASES = "ABCDEFGHIJKLMNOPQ".split("");
+const CONDS = ["Mint","Muy bueno","Con detalles","Customizado"];
+
+function carSVG(color){
+  const c = color && /^#|^[a-z]+$/i.test(color) ? color : "var(--muted)";
+  return `<svg viewBox="0 0 120 52" aria-hidden="true"><path d="M8 36c0-6 4-9 12-10l14-2 14-11c4-3 8-4 14-4h18c6 0 10 2 14 6l8 9 8 2c4 1 6 4 6 8v4c0 2-1 3-3 3h-8a10 10 0 00-20 0H40a10 10 0 00-20 0h-9c-2 0-3-1-3-3z" fill="${c}" opacity=".9"/><path d="M52 23l10-8c2-2 5-3 9-3h8v11zM83 12h4c4 0 7 2 9 4l6 7H83z" fill="var(--surface)" opacity=".7"/><circle cx="30" cy="42" r="8" fill="var(--ink)"/><circle cx="30" cy="42" r="3.5" fill="var(--line)"/><circle cx="96" cy="42" r="8" fill="var(--ink)"/><circle cx="96" cy="42" r="3.5" fill="var(--line)"/></svg>`;
+}
+const COLOR_MAP = {rojo:"#C8102E",azul:"#1B4F9C",negro:"#222",blanco:"#ddd",verde:"#2E7D32",amarillo:"#F2B705",naranja:"#E8530E",gris:"#8A96A3",plata:"#A9B4BE",morado:"#6A3FA0",rosado:"#E05297",dorado:"#B8860B",celeste:"#4FA3D9",cafe:"#7A4E2D",café:"#7A4E2D"};
+Object.assign(COLOR_MAP,{red:"#C8102E",blue:"#1B4F9C",black:"#222",white:"#ddd",green:"#2E7D32",yellow:"#F2B705",orange:"#E8530E",gray:"#8A96A3",grey:"#8A96A3",silver:"#A9B4BE",purple:"#6A3FA0",pink:"#E05297",gold:"#B8860B",teal:"#1F8A8A",turquesa:"#1F8A8A",brown:"#7A4E2D",maroon:"#7A1F2B",granate:"#7A1F2B",cream:"#E9DFC6",crema:"#E9DFC6",zamac:"#B9BEC3",bronce:"#8C6A3F",cobre:"#B5653A",lima:"#9BCB3C",lime:"#9BCB3C",aguamarina:"#3FB8B0",aqua:"#3FB8B0"});
+const colorOf = c => { for(const w of String(c||"").toLowerCase().split(/\s+/)) if(COLOR_MAP[w]) return COLOR_MAP[w]; return null; };
+
+/* ============ ejemplos (solo la primera vez, en este dispositivo) ============ */
+function sampleCars(){
+  const base = Date.now();
+  const mk = (o,i) => Object.assign({id:uid(), created: base - i*86400000, qty:1, status:"owned", condition:"blister", quality:"Mint", th:"", lists:[], trade:false, example:true, photo:"", code:"", barcode:""}, o);
+  return [
+    mk({name:"Toyota AE86 Sprinter Trueno", series:"HW J-Imports", year:2026, color:"Blanco", colNum:"198/250", price:7.9, value:12, store:"Tottus", location:"Vitrina 1", lists:["Colección JDM"]},0),
+    mk({name:"Ford Mustang GTD", series:"Factory Fresh", year:2026, color:"Azul", caseLetter:"B", colNum:"043/250", th:"STH", price:7.9, value:150, store:"Plaza Vea", location:"Caja fuerte"},1),
+    mk({name:"'87 Buick Regal GNX", series:"Nightspeed", year:2026, color:"Negro", caseLetter:"A", colNum:"009/250", th:"TH", price:7.9, value:35, location:"Vitrina 1"},2),
+    mk({name:"Nissan Skyline GT-R (BNR34)", series:"HW J-Imports", year:2026, color:"Plata", colNum:"199/250", price:7.9, value:14, qty:3, trade:true, location:"Caja B", lists:["Colección JDM"]},3),
+    mk({name:"Porsche 911 Rallye", series:"Safari Mode", year:2025, color:"Blanco", caseLetter:"G", colNum:"154/250", th:"STH", price:6.9, value:120, condition:"suelto", quality:"Muy bueno", location:"Vitrina 2"},4),
+    mk({name:"'18 Honda Civic Type R", series:"Nightspeed", year:2026, color:"Rojo", colNum:"011/250", status:"wish", value:10},5),
+  ];
+}
+
+/* ============ almacenamiento ============ */
+// Local: IndexedDB (con respaldo en memoria si el navegador lo bloquea)
+function LocalStore(){
+  let dbp = null, mem = null, listeners = [];
+  function open(){
+    if(dbp) return dbp;
+    dbp = new Promise((res) => {
+      try{
+        const r = indexedDB.open("garaje64", 1);
+        r.onupgradeneeded = () => { const d=r.result; d.createObjectStore("cars",{keyPath:"id"}); d.createObjectStore("meta"); };
+        r.onsuccess = () => res(r.result);
+        r.onerror = () => res(null);
+        r.onblocked = () => res(null);
+        setTimeout(()=>res(null), 4000);
+      }catch(e){ res(null); }
+    });
+    dbp.then(d => { api.memoryOnly = !d; });
+    return dbp;
+  }
+  async function tx(store, mode, fn){
+    const d = await open();
+    if(!d){ if(!mem) mem={cars:new Map(),meta:new Map()}; return fn(null, mem[store]); }
+    return new Promise((res,rej)=>{ const t=d.transaction(store,mode); const s=t.objectStore(store); let out; const r=fn(s); if(r) r.onsuccess=()=>out=r.result; t.oncomplete=()=>res(out); t.onerror=()=>rej(t.error); });
+  }
+  const notify = async () => { const cars = await api.all(); const meta = await api.getMeta(); listeners.forEach(f=>f(cars, meta)); };
+  const api = {
+    kind:"local", memoryOnly:false,
+    async all(){ const r = await tx("cars","readonly",(s,m)=> m ? null : s.getAll()); return r || (mem ? [...mem.cars.values()] : []); },
+    async put(car){ await tx("cars","readwrite",(s,m)=> m ? (m.set(car.id,car),null) : s.put(car)); notify(); },
+    async putMany(cars){ for(const c of cars) await tx("cars","readwrite",(s,m)=> m ? (m.set(c.id,c),null) : s.put(c)); notify(); },
+    async del(id){ await tx("cars","readwrite",(s,m)=> m ? (m.delete(id),null) : s.delete(id)); notify(); },
+    async getMeta(){ const v = await tx("meta","readonly",(s,m)=> m ? null : s.get("meta")); return v || (mem && mem.meta.get("meta")) || null; },
+    async setMeta(meta){ await tx("meta","readwrite",(s,m)=> m ? (m.set("meta",meta),null) : s.put(meta,"meta")); notify(); },
+    subscribe(f){ listeners.push(f); notify(); return ()=>{ listeners = listeners.filter(x=>x!==f); }; },
+    async init(){
+      const first = !ls.get("g64.seeded", false);
+      if(first){ ls.set("g64.seeded", true); const cur = await api.all(); if(!cur.length){ await api.putMany(sampleCars()); await api.setMeta({lists:["Vitrina principal","Para regalar","Colección JDM"]}); } }
+    }
+  };
+  return api;
+}
+
+// Nube: base de datos del artifact. "cuenta" = colección privada de cada persona; "cloud" = colección compartida.
+function CloudStore(db, carsPath, metaPath, kind){
+  let carsCache = [], metaCache = null, listeners = [], unsubs = [];
+  const emit = () => listeners.forEach(f=>f(carsCache, metaCache));
+  const clean = car => JSON.parse(JSON.stringify(car));
+  return {
+    kind,
+    async all(){ return carsCache; },
+    async put(car){ await db.collection(carsPath).doc(car.id).set(clean(car)); },
+    async putMany(cars){ for(const c of cars) await db.collection(carsPath).doc(c.id).set(clean(c)); },
+    async del(id){ await db.collection(carsPath).doc(id).delete(); },
+    async getMeta(){ return metaCache; },
+    async fetchMeta(){ try{ const s = await db.doc(metaPath).get(); return s.exists ? s.data() : null; }catch(e){ return null; } },
+    async setMeta(meta){ await db.doc(metaPath).set(meta); },
+    subscribe(f){
+      listeners.push(f);
+      if(!unsubs.length){
+        let loaded = false;
+        const timer = setTimeout(()=>{ if(!loaded){ state.cloudNote = "No se puede conectar con tu cuenta todavía. Revisa tu conexión a internet."; state.cloudLoaded = true; render(); } }, 10000);
+        unsubs.push(db.collection(carsPath).onSnapshot(s=>{ carsCache = s.docs.map(d=>d.data()); loaded = true; clearTimeout(timer); state.cloudNote=""; state.cloudLoaded = true; emit(); },
+          e=>{ clearTimeout(timer); state.cloudNote = "No se pudo leer la colección: " + (e.message||e.code); state.cloudLoaded = true; render(); }));
+        unsubs.push(db.doc(metaPath).onSnapshot(s=>{ metaCache = s.exists ? s.data() : null; emit(); }, ()=>{}));
+      } else emit();
+      return ()=>{ listeners = listeners.filter(x=>x!==f); if(!listeners.length){ unsubs.forEach(u=>{ try{u();}catch(e){} }); unsubs = []; } };
+    },
+    async init(){}
+  };
+}
+
+/* ============ estado ============ */
+const state = {
+  view: "garaje", cars: [], lists: [], q: "", filter: "all", listFilter: "", sort: "recent",
+  currency: ls.get("g64.currency","S/"), mode: "local", cloudNote:"", cloudLoaded:false,
+  booting: true, uid: null, migrateCount: 0
+};
+const MODE_NAMES = {cuenta:"Mi cuenta", cloud:"Compartida", local:"Este dispositivo"};
+// Versión publicada como sitio propio (instalable en la pantalla de inicio): todo se guarda en el teléfono
+const SITE = !!window.G64_SITE;
+if(SITE) MODE_NAMES.local = "En este teléfono";
+const isIOS = () => /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
+const isStandalone = () => { try{ return window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true; }catch(e){ return false; } };
+state.persisted = null;
+async function askPersist(){ try{ if(navigator.storage && navigator.storage.persist){ state.persisted = (await navigator.storage.persisted()) || (await navigator.storage.persist()); } }catch(e){} }
+let store = null, unsubStore = null, cloudDb = undefined;
+
+async function getCloud(){
+  if(cloudDb !== undefined) return cloudDb;
+  try{ cloudDb = window.claude && window.claude.use ? await window.claude.use("db") : null; }catch(e){ cloudDb = null; }
+  return cloudDb;
+}
+async function getUserId(){
+  if(state.uid) return state.uid;
+  try{
+    const user = window.claude && window.claude.use ? await window.claude.use("user") : null;
+    if(user){ const id = await user.id(); if(id) state.uid = id; }
+  }catch(e){}
+  return state.uid;
+}
+function makeStore(mode, db){
+  if(mode === "cuenta") return CloudStore(db, `data/users/${state.uid}/garage/cars`, `data/users/${state.uid}/garage`, "cuenta");
+  if(mode === "cloud") return CloudStore(db, "cars", "meta/main", "cloud");
+  return LocalStore();
+}
+async function setMode(mode, quiet){
+  const db = (mode === "local") ? null : await getCloud();
+  if(mode === "cuenta" && !(db && await getUserId())){ if(!quiet) toast("Para guardar en tu cuenta, abre la app con tu sesión de claude.ai iniciada."); mode = "local"; }
+  if(mode === "cloud" && !db){ if(!quiet) toast("La colección compartida necesita tu sesión de claude.ai iniciada."); mode = "local"; }
+  if(unsubStore) unsubStore();
+  state.cloudLoaded = mode === "local"; state.cloudNote = "";
+  store = makeStore(mode, db);
+  state.mode = mode;
+  $("#modeBtn").classList.toggle("cloud", mode!=="local");
+  $("#modeTxt").textContent = MODE_NAMES[mode];
+  await store.init();
+  state.booting = false;
+  unsubStore = store.subscribe((cars, meta)=>{ state.cars = cars || []; state.lists = (meta && meta.lists) || []; render(); });
+  if(mode === "local"){ await store.all(); render(); }
+  checkLocalLeftovers();
+}
+// autos que quedaron guardados solo en este navegador (de antes) -> ofrecer pasarlos a la cuenta
+async function checkLocalLeftovers(){
+  state.migrateCount = 0;
+  if(SITE || state.mode === "local" || ls.get("g64.migrated", false)) return;
+  try{ const cars = (await LocalStore().all()).filter(c=>!c.example); state.migrateCount = cars.length; if(cars.length) render(); }catch(e){}
+}
+
+const money = v => state.currency + " " + num(v).toLocaleString("es-PE",{minimumFractionDigits:2, maximumFractionDigits:2});
+const owned = () => state.cars.filter(c=>c.status!=="wish");
+const wish = () => state.cars.filter(c=>c.status==="wish");
+
+/* ============ vistas ============ */
+function render(){
+  document.querySelectorAll("nav.bottom button[data-go]").forEach(b=>{ if(b.dataset.go!=="scan") b.setAttribute("aria-current", b.dataset.go===state.view ? "page":"false"); });
+  const app = $("#app");
+  const views = {garaje: viewGaraje, catalogo: viewCatalogo, listas: viewListas, stats: viewStats, ajustes: viewAjustes};
+  app.innerHTML = (views[state.view]||viewGaraje)();
+  bindView();
+}
+
+function filtered(){
+  const q = state.q.trim().toLowerCase();
+  let list = state.cars.filter(c=>{
+    if(state.filter==="owned" && c.status==="wish") return false;
+    if(state.filter==="wish" && c.status!=="wish") return false;
+    if(state.filter==="dupes" && !(c.status!=="wish" && num(c.qty)>1)) return false;
+    if(state.filter==="trade" && !c.trade) return false;
+    if(state.filter==="th" && c.th!=="TH") return false;
+    if(state.filter==="sth" && c.th!=="STH") return false;
+    if(state.filter==="blister" && c.condition!=="blister") return false;
+    if(state.listFilter && !(c.lists||[]).includes(state.listFilter)) return false;
+    if(q){ const hay = [c.name,c.series,c.year,c.color,c.code,c.barcode,c.caseLetter&&("case "+c.caseLetter),c.location,c.store,c.notes,c.colNum].join(" ").toLowerCase(); if(!q.split(/\s+/).every(w=>hay.includes(w))) return false; }
+    return true;
+  });
+  const by = {
+    recent:(a,b)=>(b.created||0)-(a.created||0),
+    name:(a,b)=>String(a.name).localeCompare(String(b.name),"es"),
+    year:(a,b)=>num(b.year)-num(a.year) || String(a.name).localeCompare(String(b.name),"es"),
+    value:(a,b)=>num(b.value)*num(b.qty||1)-num(a.value)*num(a.qty||1),
+    case:(a,b)=>num(b.year)-num(a.year) || String(a.caseLetter||"Z").localeCompare(String(b.caseLetter||"Z"))
+  };
+  return list.sort(by[state.sort]||by.recent);
+}
+
+function cardHTML(c){
+  const ph = c.photo ? `<img src="${esc(c.photo)}" alt="" loading="lazy">` : carSVG(colorOf(c.color));
+  const l = [], r = [];
+  if(c.th==="STH") l.push(`<span class="tag sth">STH</span>`); else if(c.th==="TH") l.push(`<span class="tag th">TH</span>`);
+  if(c.status==="wish") l.push(`<span class="tag wish">Busco</span>`);
+  if(c.example) l.push(`<span class="tag ex">Ejemplo</span>`);
+  if(c.caseLetter) r.push(`<span class="tag">Case ${esc(c.caseLetter)}</span>`);
+  if(num(c.qty)>1 && c.status!=="wish") r.push(`<span class="tag qty">×${num(c.qty)}</span>`);
+  const sub = [c.year, c.series].filter(Boolean).join(" · ") || "Sin serie";
+  return `<button class="card" type="button" data-open="${esc(c.id)}"><div class="ph">${ph}<div class="tags"><span class="l">${l.join("")}</span><span class="r">${r.join("")}</span></div></div><div class="meta"><span class="nm">${esc(c.name)}</span><span class="sub">${esc(sub)}</span></div></button>`;
+}
+
+function viewGaraje(){
+  const counts = {
+    all: state.cars.length, owned: owned().length, wish: wish().length,
+    dupes: owned().filter(c=>num(c.qty)>1).length, trade: state.cars.filter(c=>c.trade).length,
+    th: state.cars.filter(c=>c.th==="TH").length, sth: state.cars.filter(c=>c.th==="STH").length,
+    blister: state.cars.filter(c=>c.condition==="blister").length
+  };
+  const chips = [["all","Todos"],["owned","Tengo"],["wish","Wishlist"],["dupes","Repetidos"],["trade","Intercambio"],["th","TH"],["sth","Super TH"],["blister","En blíster"]];
+  const list = filtered();
+  const hasEx = state.cars.some(c=>c.example);
+  const totalUnits = owned().reduce((s,c)=>s+num(c.qty||1),0);
+  let body;
+  if(state.booting || (state.mode!=="local" && !state.cloudLoaded)) body = `<div class="empty"><h2>Cargando tu colección</h2><p>Conectando con tu cuenta…</p></div>`;
+  else if(!state.cars.length && state.mode==="cuenta") body = `<div class="empty"><h2>Tu garaje está vacío</h2><p>Escanea el código de un blíster o agrega tu primer auto. Todo se guarda en tu cuenta de claude.ai y no se borra al cerrar el navegador.</p><div class="row" style="justify-content:center;margin-top:12px"><button class="btn primary" data-act="scan" type="button">Escanear</button><button class="btn" data-act="new" type="button">Agregar a mano</button></div></div>`;
+  else if(!state.cars.length) body = `<div class="empty"><h2>Tu garaje está vacío</h2><p>Escanea el código de barras de un blíster o agrega tu primer auto a mano.</p><div class="row" style="justify-content:center;margin-top:12px"><button class="btn primary" data-act="scan" type="button">Escanear</button><button class="btn" data-act="new" type="button">Agregar a mano</button></div></div>`;
+  else if(!list.length) body = `<div class="empty"><h2>Sin resultados</h2><p>Ningún auto coincide con la búsqueda o el filtro.</p></div>`;
+  else body = `<div class="grid">${list.map(cardHTML).join("")}</div>`;
+  return `
+  <div class="row" style="justify-content:space-between;align-items:flex-end">
+    <div><div class="label">${state.mode==="cloud"?"Colección compartida":state.mode==="cuenta"?"Mi colección · guardada en mi cuenta":SITE?"Mi colección · en este teléfono":"Mi colección · este navegador"}</div><h1>${totalUnits} ${totalUnits===1?"auto":"autos"}</h1></div>
+    <button class="btn primary" data-act="new" type="button">+ Agregar</button>
+  </div>
+  ${state.cloudNote ? `<div class="banner"><p>${esc(state.cloudNote)}</p></div>`:""}
+  ${state.migrateCount ? `<div class="banner warn"><p>Encontramos <b>${state.migrateCount} ${state.migrateCount===1?"auto":"autos"}</b> guardado${state.migrateCount===1?"":"s"} solo en este navegador. Pásalos a tu cuenta para no perderlos.</p><button class="btn sm primary" data-act="migrate" type="button">Pasarlos a mi cuenta</button></div>`:""}
+  ${SITE && !state.booting ? (store && store.memoryOnly
+      ? `<div class="banner warn"><p><b>Este navegador no permite guardar datos</b> (¿pestaña privada?). Abre la app en una pestaña normal de Safari.</p></div>`
+      : !isStandalone() && isIOS()
+        ? `<div class="banner warn"><p><b>Instala la app para que no se borre nada:</b> toca Compartir <span aria-hidden="true">⬆︎</span> y luego “Agregar a inicio”. Ábrela siempre desde ese ícono.</p><button class="btn sm primary" data-act="howInstall" type="button">Ver cómo</button></div>`
+        : "") : ""}
+  ${!SITE && !state.booting && state.mode==="local" ? (store && store.memoryOnly
+      ? `<div class="banner warn"><p><b>Este navegador no permite guardar datos.</b> Lo que agregues se borrará al cerrar la página. Abre la app con tu sesión de claude.ai iniciada para guardarla en tu cuenta.</p></div>`
+      : state.uid
+        ? `<div class="banner warn"><p>Estás guardando <b>solo en este navegador</b> y el iPhone puede borrarlo. Te recomendamos guardar en tu cuenta.</p><button class="btn sm primary" data-act="toCuenta" type="button">Guardar en mi cuenta</button></div>`
+        : `<div class="banner warn"><p>Estás guardando <b>solo en este navegador</b> y el iPhone puede borrarlo. Inicia sesión en claude.ai y abre la app desde su enlace para guardar tu colección en tu cuenta. Mientras tanto, haz respaldos en Ajustes.</p></div>`) : ""}
+  ${hasEx ? `<div class="banner"><p>Estos autos son <b>ejemplos</b> para que veas cómo funciona. Bórralos cuando empieces tu colección.</p><button class="btn sm" data-act="clearEx" type="button">Borrar ejemplos</button></div>`:""}
+  <div class="search">
+    <input id="q" type="search" placeholder="Buscar por nombre, serie, año, código, case…" value="${esc(state.q)}" aria-label="Buscar">
+    <select id="sort" aria-label="Ordenar">
+      ${[["recent","Recientes"],["name","Nombre"],["year","Año"],["case","Case"],["value","Valor"]].map(([v,t])=>`<option value="${v}" ${state.sort===v?"selected":""}>${t}</option>`).join("")}
+    </select>
+  </div>
+  <div class="chips" role="group" aria-label="Filtros">
+    ${chips.map(([k,t])=>`<button class="chip" type="button" data-filter="${k}" aria-pressed="${state.filter===k}">${t}<span class="n">${counts[k]}</span></button>`).join("")}
+  </div>
+  ${state.lists.length ? `<div class="chips" style="margin-top:6px" role="group" aria-label="Listas"><button class="chip" type="button" data-list="" aria-pressed="${!state.listFilter}">Todas las listas</button>${state.lists.map(l=>`<button class="chip" type="button" data-list="${esc(l)}" aria-pressed="${state.listFilter===l}">${esc(l)}<span class="n">${state.cars.filter(c=>(c.lists||[]).includes(l)).length}</span></button>`).join("")}</div>`:""}
+  ${body}`;
+}
+
+function viewListas(){
+  const locs = {};
+  owned().forEach(c=>{ const k = (c.location||"").trim() || "Sin ubicación"; locs[k]=(locs[k]||0)+num(c.qty||1); });
+  return `
+  <div class="label">Organiza sin límites</div><h1>Listas</h1>
+  <p class="muted" style="margin:6px 0 12px">Crea todas las listas que quieras. Un auto puede estar en varias a la vez.</p>
+  <form class="row" id="newList" style="margin-bottom:12px"><input id="newListName" class="f" style="flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px" placeholder="Nombre de la nueva lista" maxlength="60" aria-label="Nombre de la lista"><button class="btn dark" type="submit">Crear</button></form>
+  <div class="panel">
+    ${state.lists.length ? state.lists.map((l,i)=>`<div class="list-row" data-li="${i}">
+      <span class="nm">${esc(l)}</span><span class="muted" style="font-variant-numeric:tabular-nums">${state.cars.filter(c=>(c.lists||[]).includes(l)).length}</span>
+      <button class="btn sm" type="button" data-showlist="${i}">Ver</button>
+      <button class="btn sm" type="button" data-renlist="${i}">Renombrar</button>
+      <button class="btn sm danger" type="button" data-dellist="${i}" aria-label="Eliminar lista">✕</button></div>`).join("") : `<p class="muted" style="margin:0">Aún no tienes listas. Ejemplos: "Vitrina principal", "Para intercambiar", "Serie completa 2026".</p>`}
+  </div>
+  <h2 style="margin-top:22px">Ubicaciones</h2>
+  <p class="muted" style="margin:4px 0 10px">Dónde está guardado cada auto (vitrina, caja, cajón). Se asigna en la ficha de cada auto.</p>
+  <div class="panel">${Object.keys(locs).length ? Object.entries(locs).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<div class="list-row"><span class="nm">${esc(k)}</span><span class="muted" style="font-variant-numeric:tabular-nums">${n} autos</span>${k!=="Sin ubicación"?`<button class="btn sm" type="button" data-showloc="${esc(k)}">Ver</button>`:""}</div>`).join("") : `<p class="muted" style="margin:0">Sin autos todavía.</p>`}</div>`;
+}
+
+function viewStats(){
+  const o = owned();
+  const units = o.reduce((s,c)=>s+num(c.qty||1),0);
+  const paid = o.reduce((s,c)=>s+num(c.price)*num(c.qty||1),0);
+  const val = o.reduce((s,c)=>s+num(c.value||c.price)*num(c.qty||1),0);
+  const gain = val - paid;
+  const th = o.filter(c=>c.th==="TH").length, sth = o.filter(c=>c.th==="STH").length;
+  const dup = o.reduce((s,c)=>s+Math.max(0,num(c.qty||1)-1),0);
+  const wishVal = wish().reduce((s,c)=>s+num(c.value),0);
+  const group = (key) => { const m={}; o.forEach(c=>{ const k = String(c[key]||"").trim() || "—"; m[k]=(m[k]||0)+num(c.qty||1); }); return Object.entries(m).sort((a,b)=>b[1]-a[1]); };
+  const bars = (rows, max=8) => { const top = rows.slice(0,max); const mx = Math.max(1,...top.map(r=>r[1])); return top.length ? `<div class="bars">${top.map(([k,n])=>`<div class="bar"><span class="t" title="${esc(k)}">${esc(k)}</span><span class="track"><span class="fill" style="display:block;width:${(n/mx*100).toFixed(1)}%"></span></span><span class="n">${n}</span></div>`).join("")}</div>` : `<p class="muted">Sin datos.</p>`; };
+  const topVal = [...o].sort((a,b)=>num(b.value)-num(a.value)).slice(0,5);
+  // gráfico por año
+  const years = group("year").filter(r=>r[0]!=="—").sort((a,b)=>num(a[0])-num(b[0]));
+  let yc = `<p class="muted">Agrega el año a tus autos para ver la línea de tiempo.</p>`;
+  if(years.length){
+    const W=600,H=200,pl=30,pb=26,pt=12, mx=Math.max(...years.map(y=>y[1])); const bw=(W-pl-8)/years.length;
+    const ticks=[0,Math.ceil(mx/2),mx].filter((v,i,a)=>a.indexOf(v)===i);
+    yc = `<div style="overflow-x:auto"><svg class="yearchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Autos por año">
+      ${ticks.map(t=>{const y=H-pb-(t/mx)*(H-pb-pt);return `<line x1="${pl}" x2="${W}" y1="${y}" y2="${y}" stroke="var(--line)" stroke-width="1"/><text x="${pl-6}" y="${y+4}" text-anchor="end" font-size="11" fill="var(--muted)">${t}</text>`;}).join("")}
+      ${years.map(([yr,n],i)=>{const h=(n/mx)*(H-pb-pt);const x=pl+i*bw+bw*.15;return `<rect x="${x}" y="${H-pb-h}" width="${bw*.7}" height="${h}" rx="3" fill="var(--accent)"/><text x="${x+bw*.35}" y="${H-8}" text-anchor="middle" font-size="11" fill="var(--muted)">${esc(yr)}</text>`;}).join("")}
+    </svg></div>`;
+  }
+  return `
+  <div class="label">Tu colección en números</div><h1>Valor y estadísticas</h1>
+  <div class="kpis">
+    <div class="kpi"><div class="label">Autos</div><div class="v">${units}</div><div class="muted" style="font-size:13px">${o.length} modelos distintos</div></div>
+    <div class="kpi"><div class="label">Invertido</div><div class="v">${money(paid)}</div></div>
+    <div class="kpi"><div class="label">Valor estimado</div><div class="v">${money(val)}</div></div>
+    <div class="kpi"><div class="label">Ganancia</div><div class="v ${gain>=0?"pos":"neg"}">${gain>=0?"+":"−"}${money(Math.abs(gain))}</div><div class="muted" style="font-size:13px">${paid?((gain/paid)*100).toFixed(0)+"% sobre lo pagado":"Agrega precios"}</div></div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="label">Treasure Hunt</div><div class="v" style="color:var(--blue)">${th}</div></div>
+    <div class="kpi"><div class="label">Super TH</div><div class="v" style="color:var(--gold)">${sth}</div></div>
+    <div class="kpi"><div class="label">Repetidos</div><div class="v">${dup}</div><div class="muted" style="font-size:13px">copias extra para cambiar</div></div>
+    <div class="kpi"><div class="label">Wishlist</div><div class="v">${wish().length}</div><div class="muted" style="font-size:13px">${wishVal?money(wishVal)+" estimado":"por conseguir"}</div></div>
+  </div>
+  <div class="panel" style="margin-top:12px"><h3>Autos por año</h3>${yc}</div>
+  <div class="cols">
+    <div class="panel"><h3>Series con más autos</h3>${bars(group("series"))}</div>
+    <div class="panel"><h3>Por case</h3>${bars(group("caseLetter").map(([k,n])=>[k==="—"?"Sin case":"Case "+k,n]),17)}</div>
+    <div class="panel"><h3>Más valiosos</h3>${topVal.length?`<div class="bars">${topVal.map(c=>`<div class="list-row" style="padding:6px 0"><button class="nm" style="background:none;border:0;padding:0;text-align:left;font-weight:600" data-open="${esc(c.id)}" type="button">${esc(c.name)}</button><span style="font-variant-numeric:tabular-nums;font-weight:700">${money(c.value)}</span></div>`).join("")}</div>`:`<p class="muted">Sin datos.</p>`}</div>
+    <div class="panel"><h3>Estado</h3>${bars([["En blíster",o.filter(c=>c.condition==="blister").reduce((s,c)=>s+num(c.qty||1),0)],["Suelto",o.filter(c=>c.condition!=="blister").reduce((s,c)=>s+num(c.qty||1),0)]])}</div>
+  </div>`;
+}
+
+function viewAjustes(){
+  return `
+  <div class="label">Configuración</div><h1>Ajustes</h1>
+  <div class="panel stack" style="margin-top:14px">
+    <h3>Dónde se guarda</h3>
+    ${SITE ? `
+    <p style="margin:0">Tu colección se guarda <b>en este teléfono</b>. No necesitas cuenta ni internet.</p>
+    <div class="row" style="gap:6px">
+      <span class="tag" style="background:${isStandalone()?"var(--ok)":"var(--accent)"};color:#fff">${isStandalone()?"App instalada":"Abierta en el navegador"}</span>
+      ${state.persisted===true?`<span class="tag" style="background:var(--ok);color:#fff">Guardado permanente</span>`:""}
+    </div>
+    <p class="muted" style="margin:0">${isStandalone() ? "Al abrirla desde la pantalla de inicio, el iPhone no borra tus datos. Igual haz un respaldo de vez en cuando por si cambias de teléfono." : "Instálala en la pantalla de inicio (Compartir → Agregar a inicio) y ábrela siempre desde ese ícono. En una pestaña de Safari, el iPhone puede borrar los datos si no la abres en una semana."}</p>
+    ${isStandalone()?"":`<button class="btn primary" type="button" data-act="howInstall">Cómo instalarla en el iPhone</button>`}
+    ` : `
+    <div class="seg" role="group" aria-label="Dónde se guarda">
+      <button type="button" data-mode="cuenta" aria-pressed="${state.mode==="cuenta"}">Mi cuenta</button>
+      <button type="button" data-mode="cloud" aria-pressed="${state.mode==="cloud"}">Compartida</button>
+      <button type="button" data-mode="local" aria-pressed="${state.mode==="local"}">Este dispositivo</button>
+    </div>
+    <p class="muted" style="margin:0">${state.mode==="cuenta" ? "Tu colección privada se guarda en tu cuenta de claude.ai. No se borra al cerrar el navegador y la ves igual en el iPhone, la computadora o la app de Claude." : state.mode==="cloud" ? "Todos los que abran esta app con su cuenta ven y editan la misma colección, en tiempo real. Ideal para una colección familiar o un club." : "Tu colección vive solo en este navegador. El iPhone puede borrarla si no abres la página en un tiempo o si limpias Safari. Úsalo solo si no puedes iniciar sesión."}</p>
+    ${state.uid ? "" : `<p class="muted" style="margin:0;color:var(--bad)">No hay una sesión de claude.ai iniciada en esta vista, así que solo está disponible "Este dispositivo".</p>`}
+    <div class="row">
+      <button class="btn" type="button" data-act="copyTo" data-target="cuenta" ${state.uid?"":"disabled"}>Pasar autos de este navegador a mi cuenta</button>
+      <button class="btn" type="button" data-act="copyTo" data-target="cloud" ${state.uid?"":"disabled"}>…a la colección compartida</button>
+    </div>`}
+  </div>
+  <div class="panel stack" style="margin-top:12px">
+    <h3>Moneda</h3>
+    <div class="f"><label class="label" for="cur">Símbolo para precios</label><select id="cur">${["S/","$","US$","€","MX$","COP$","CLP$","ARS$","R$"].map(c=>`<option ${state.currency===c?"selected":""}>${c}</option>`).join("")}</select></div>
+  </div>
+  <div class="panel stack" style="margin-top:12px">
+    <h3>Respaldo</h3>
+    <div class="row"><button class="btn" type="button" data-act="exportJson">Exportar respaldo (.json)</button><button class="btn" type="button" data-act="exportCsv">Exportar a Excel (.csv)</button></div>
+    <label class="btn filebtn">Importar respaldo (.json)<input type="file" id="importFile" accept="application/json,.json"></label>
+    <p class="muted" style="margin:0;font-size:13px">El respaldo incluye fotos. Al importar, se suman los autos que no existan.</p>
+  </div>
+  <div class="panel stack" style="margin-top:12px">
+    <h3>Zona de cuidado</h3>
+    <button class="btn danger" type="button" data-act="askWipe">Borrar toda la colección de ${state.mode==="cloud"?"la nube":"este dispositivo"}</button>
+    <div id="wipeBox"></div>
+  </div>
+  <p class="muted" style="font-size:12px;margin-top:16px">Garaje 64 es una app independiente para coleccionistas de autos a escala 1:64. No está afiliada a ningún fabricante de juguetes.</p>`;
+}
+
+
+/* ============ catálogo (línea principal) ============ */
+// [año, número, nombre, serie, case, TH/STH, [[toy #, color, TH/STH], ...]]. Fuentes: munclemikes.com y 164custom.com.
+const CATALOG = [[2026,1,"Mazda MX-5 Miata","HW Dream Garage","","",[["JJJ02","White",""],["JJL03","Slate Blue",""]]],[2026,2,"'16 Lamborghini Centenario Roadster","Exoticars","","",[["JJH80","Metalflake Yellow",""],["JJM49","Steel Blue",""],["JJK74","Lime",""]]],[2026,3,"Gordon Murray Automotive T.33","Exoticars","","",[["JJJ62","Yellow",""],["JJL44","Metalflake Green",""]]],[2026,4,"Batmobile (The Batman)","Batman","","",[["JJH83","Silver",""],["JJK97","Metalflake Blue",""]]],[2026,5,"Pass 'n Go","Drop Tops","","",[["JJH30","ZAMAC",""],["JJK98","White",""]]],[2026,6,"RD-06","X-Raycers","","",[["JJH84","Purple",""],["JJK66","Black",""]]],[2026,7,"Solar Reflex","HW EV","","",[["JJH85","Light Blue",""],["JJK67","Black",""]]],[2026,8,"Ford Mustang Mach-E 1400","HW EV","","",[["JJH86","Blue",""],["JJM61","Red",""],["JJK78","White",""]]],[2026,9,"'87 Buick Regal GNX","Nightspeed","A","TH",[["JJM00","Purple","TH"]]],[2026,10,"'20 Ford Mustang Shelby GT500","Nightspeed","","",[["JJH87","Gray",""],["JJM50","Light Blue",""],["JJK68","Black",""]]],[2026,11,"'18 Honda Civic Type R","Nightspeed","","",[["JJH88","White",""],["JJK87","Metalflake Green",""]]],[2026,12,"Carbonator","Experimotors","","",[["JJH89","Green",""]]],[2026,13,"Drift-Ender","Truckin' Along","A","STH",[["JJM15","Spectraflame Red","STH"],["JJH90","Red",""]]],[2026,14,"'20 Jeep Gladiator","Truckin' Along","","",[["JJH91","Lime Green",""],["JJM62","Red",""]]],[2026,15,"Porsche 911 Carrera T","Factory Fresh","","",[["JJH33","Gray",""],["JJM31","ZAMAC",""],["JJK80","Black",""]]],[2026,16,"Maserati Shamal","Factory Fresh","","",[["JJH92","Blue",""],["JJM57","White",""],["JJL08","Yellow",""]]],[2026,17,"Bounce'n Bass","Layin' Low","","",[["JJH32","Metalflake Gold",""],["JJK69","Metalflake Pink",""]]],[2026,18,"Deora II","HW Fan Driven","","",[["JJH93","Teal",""],["JJK70","Pink",""]]],[2026,19,"Rodger Dodger","HW Fan Driven","","",[["JJH94","Teal",""],["JJM51","Dark Blue",""],["JJK71","Black",""]]],[2026,20,"McLaren Formula 1 Team","Formula 1","","",[["JJH95","Black",""]]],[2026,21,"Barbie Dream Camper","Mattel","","",[["JJH96","Pink",""],["JJK72","Purple",""]]],[2026,22,"Instant Boost","HW Starting Grid","","",[["JJH31","White",""],["JJK73","Tan",""]]],[2026,23,"'69 Dodge Charger Daytona","HW Starting Grid","","",[["JJH97","Metalflake Gold",""],["JJM52","White",""]]],[2026,24,"Track Ripper","HW Starting Grid","","",[["JJM33","ZAMAC",""],["JJK95","Silver",""]]],[2026,25,"McMurtry Spéirling","Exoticars","","",[["JJH81","Metalflake Blue",""],["JJK65","Green",""]]],[2026,26,"Pagani Zonda Cinque","Exoticars","","",[["JJH34","White",""],["JJK75","Orange",""],["JJM32","ZAMAC",""]]],[2026,27,"Optimus Prime","Screen Time","","",[["JJJ00","Red",""]]],[2026,28,"HW K.I.T.T. Concept","Screen Time","","",[]],[2026,29,"'92 Dodge Viper RT/10","Drop Tops","B","TH",[["JJM01","White","TH"]]],[2026,30,"X-Steam","X-Raycers","","",[["JJJ01","Blue",""]]],[2026,31,"La Liebre","HW Dream Garage","","",[["JJH36","Black",""],["JJK77","White",""]]],[2026,32,"5 Alarm","HW Heavyweights","","",[["JJJ03","Purple",""],["JJK99","Yellow",""]]],[2026,33,"Haulerback","HW Heavyweights","","",[["JJJ04","Teal",""],["JJL00","Maroon",""]]],[2026,34,"Porsche Taycan Turbo S","HW EV","","",[["JJJ05","White",""],["JJL01","Metalflake Blue",""]]],[2026,35,"Wattzup","HW EV","","",[["JJJ06","Blue",""],["JJK86","Gold",""]]],[2026,36,"'70 Dodge Hemi Challenger","Nightspeed","","",[["JJM38","ZAMAC",""],["JJJ07","Gold",""]]],[2026,37,"Cupra e-Racer","Nightspeed","","",[["JJJ08","Metalflake Steel Blue",""],["JJL50","Blue",""]]],[2026,38,"24/Seven","Nightspeed","","",[["JJJ09","Red",""],["JJL51","Blue",""]]],[2026,39,"Roller Toaster","Experimotors","","",[["JJJ10","Yellow",""],["JJK88","Pink",""]]],[2026,40,"HW Braille Racer - Twin Mill","HW All Drivers Welcome","","",[["JJJ11","Metalflake Gold",""]]],[2026,41,"Ferrari SF90 Stradale","Ferrari","","",[["JJJ12","Blue",""],["JJK89","Black",""]]],[2026,42,"'83 Chevy Silverado","Truckin' Along","","",[["JJJ13","Black",""],["JJL07","Pink",""]]],[2026,43,"Ford Mustang GTD","Factory Fresh","B","STH",[["JJM16","Spectraflame Blue","STH"],["JJJ14","Blue",""]]],[2026,44,"'59 Chevy Impala","Layin' Low","","",[["JJJ15","Red",""],["JJM35","ZAMAC",""],["JJK81","White",""]]],[2026,45,"'47 Chevy Fleetline","Layin' Low","","",[["JJJ16","Light Green",""],["JJM64","Red",""]]],[2026,46,"Purple Passion","HW Fan Driven","","",[["JJJ17","Pink",""],["JJK91","Purple",""]]],[2026,47,"High-Tail Chaser","HW Mods","","",[["JJH35","Red",""],["JJK92","Gray",""]]],[2026,48,"Monster High Ghoul Mobile","Mattel","","",[["JJJ19","Light Purple",""],["JJK93","Black",""]]],[2026,49,"Quick Chat","Mattel","","",[["JJJ18","White and Red",""],["JJK82","White and Black",""]]],[2026,50,"Bugatti Bolide","HW Starting Grid","","",[["JJJ20","Metalflake Blue",""],["JJL22","White",""]]],[2026,51,"The Dark Knight Batmobile","Batman","","",[["JJJ21","Sand",""]]],[2026,52,"Porsche 911 Turbo Cabriolet","Drop Tops","","",[["JJJ22","White",""],["JJM67","Red",""],["JJL82","Silver",""]]],[2026,53,"'69 Chevelle","X-Raycers","","",[["JJJ23","Black",""],["JJK83","Green",""]]],[2026,54,"Donut Drifter","Sweet Rides","","",[["JJJ24","Green",""],["JJL31","White",""]]],[2026,55,"Dessert Drifter","Sweet Rides","","",[["JJJ25","Purple",""],["JJK84","Orange",""]]],[2026,56,"'67 Camaro","HW Dream Garage","","",[["JJM46","Blue",""],["JJJ26","Metalflake Gold",""]]],[2026,57,"Raijin Express","HW Heavyweights","","",[["JJJ27","Green",""],["JJK85","Black",""]]],[2026,58,"Electro Silhouette","HW EV","C","TH",[["JJM02","Black","TH"]]],[2026,59,"Lucid Air","HW EV","","",[["JJJ28","Burgundy",""],["JJL14","Blue",""]]],[2026,60,"Toyota Prius Custom","HW J-Imports","","",[["JJH37","White",""],["JJM48","Dark Gray",""],["JJL34","Green",""]]],[2026,61,"Mazda RX-7","HW J-Imports","","",[["JJJ29","Blue",""],["JJL35","Rose Gold",""]]],[2026,62,"Ferrari 365 GTB4 Competizione","Ferrari","","",[["JJJ30","White",""],["JJL06","White",""]]],[2026,63,"Ferrari F40 Competizione","Ferrari","C","STH",[["JJM17","Spectraflame Black","STH"],["JJJ31","Black",""]]],[2026,64,"Mercedes-Benz Unimog 1300L","Truckin' Along","","",[["JJJ32","Purple",""]]],[2026,65,"Drift Box","HW Euro","","",[["JJH40","Red",""],["JJL09","Blue",""]]],[2026,66,"'17 Audi RS 6 Avant","HW Euro","","",[["JJJ33","Yellow",""],["JJK90","Metalflake Champagne",""]]],[2026,67,"Lotus Cortina","HW Euro","","",[["JJM47","Light Green",""],["JJJ34","Red",""]]],[2026,68,"Visa Cash App Racing Bulls Formula One Team","Formula 1","","",[["JJJ35","White",""]]],[2026,69,"Volvo 240 Drift Wagon","HW Mods","","",[["JJJ36","Light Blue",""],["JJL20","Yellow",""]]],[2026,70,"Decidedly Go","Mattel","","",[["JJJ37","Purple",""],["JJL12","Red",""]]],[2026,71,"Austin Mini Cooper S","Then and Now","","",[["JJH39","Army Green",""],["JJK94","Red",""]]],[2026,72,"Datsun 240Z","Then and Now","","",[["JJJ38","Burnt Orange",""],["JJL53","Green",""]]],[2026,73,"BMW M4 GT3","HW Starting Grid","","",[["JNG59","White",""],["JJK96","Black",""]]],[2026,74,"McLaren W1","Exoticars","","",[["JJJ39","Blue",""],["JJM60","Maroon",""],["JJL43","Green",""]]],[2026,75,"X-celeron","Exoticars","","",[["JJH43","White",""],["JJL23","Metalflake Gray",""]]],[2026,76,"'76 Chevy Chevette","Drag Racers","","",[["JJJ40","Baby Blue",""],["JJL45","Green",""]]],[2026,77,"Supercharged","Drag Racers","","",[["JJJ41","Red",""],["JJL02","Light Blue",""]]],[2026,78,"Hako Type D","Compact Kings","","",[["JJJ43","Pale Green",""],["JJL57","Black",""]]],[2026,79,"Hoto Roto","Compact Kings","","",[["JJJ44","Black",""],["JJL27","Gold",""]]],[2026,80,"Kei Swap","Compact Kings","","",[["JJJ65","White",""],["JJL28","Blue",""]]],[2026,81,"Hot Wheengs","X-Raycers","D","TH",[["JJM03","Green","TH"]]],[2026,82,"Birthday Burner","Sweet Rides","","",[["JJJ45","Light Blue",""],["JJL62","Red",""]]],[2026,83,"Rapid Pulse","HW Heavyweights","","",[["JJJ46","Black",""],["JJL04","Gray",""]]],[2026,84,"Polestar TRX","HW EV","","",[["JJJ47","Yellow",""],["JJL49","White",""]]],[2026,85,"Voltage Spike","HW EV","","",[["JJJ48","Cream",""],["JJL32","Orange",""]]],[2026,86,"VW ID. Buzz Bomb","HW Euro","","",[["JJH46","Purple",""],["JJL95","Blue",""]]],[2026,87,"Cruise Bruiser","Wagons","","",[["JJJ49","Cream",""],["JJL33","Purple",""]]],[2026,88,"Nissan Skyline 2000 GT-R","HW J-Imports","","",[["JJJ50","Metalflake Orange",""],["JJL68","Metalflake Silver",""]]],[2026,89,"1985 Honda CR-X","HW J-Imports","","",[["JJJ51","Yellow",""],["JJZ05","ZAMAC",""],["JJL86","Teal",""]]],[2026,90,"'16 Cadillac ATS-V R","Nightspeed","","",[["JJJ52","Orange",""],["JJL36","Silver",""]]],[2026,91,"LB-WORKS Lamborghini Huracán Coupé","Nightspeed","","",[["JJJ53","Black",""]]],[2026,92,"Feline Lucky","Experimotors","","",[["JJJ54","Gold",""],["JJL72","Black",""]]],[2026,93,"Coupé Clip","Experimotors","","",[["JJJ55","Purple",""],["JJL05","Blue",""]]],[2026,94,"Ferrari 12Cilindri","Ferrari","","",[["JJH41","Red",""],["JJL37","Blue",""]]],[2026,95,"'64 Impala","Layin' Low","D","STH",[["JJM18","Spectraflame Teal","STH"],["JJJ56","Teal",""]]],[2026,96,"El Segundo Coupe","HW Fan Driven","","",[["JJJ57","White",""],["JJL17","Olive Green",""]]],[2026,97,"Corvette Grand Sport","Then and Now","","",[["JJJ58","White",""]]],[2026,98,"'96 Porsche Carrera","Then and Now","","",[["JJJ59","Brown",""],["JJL39","Red",""]]],[2026,99,"Renault Espace F1","HW Starting Grid","","",[["JJJ60","Blue",""],["JJL40","Yellow",""]]],[2026,100,"Twin Dorado","HW Starting Grid","","",[["JJJ61","White",""],["JJL54","Chrome",""]]],[2026,101,"'17 Pagani Huayra Roadster","Exoticars","","",[["JJH99","Metalflake Green",""]]],[2026,102,"Pass'n Gasser","Drag Racers","","",[["JJK30","Yellow",""],["JJM59","Red",""]]],[2026,103,"Eggshelleracer","Drag Racers","","",[["JJH47","Yellow",""],["JJL25","White",""]]],[2026,104,"'68 Dodge Dart","Drag Racers","","",[["JJJ63","Burnt Orange",""],["JJL79","Dark Blue",""]]],[2026,105,"'85 Honda City Turbo II","Compact Kings","","",[["JJJ66","Black",""],["JJL47","White",""]]],[2026,106,"Mazda RX-3","Compact Kings","","",[["JJJ82","Silver",""],["JJM58","Maroon",""],["JJL80","Light Blue",""]]],[2026,107,"1966 Bat Boat","Batman","","",[["JJJ67","Black",""]]],[2026,108,"The Simpsons Family Car","Screen Time","","",[["JJJ68","Pink",""]]],[2026,109,"Time Shifter","Wagons","","",[["JJJ69","Blue",""],["JJL65","Yellow",""]]],[2026,110,"'70 Chevelle SS Wagon","Wagons","","",[["JJJ70","White",""]]],[2026,111,"Long Bloc","Wagons","","",[["JJJ71","Yellow",""],["JJL66","Teal",""]]],[2026,112,"'89 Mazda Savanna RX-7 FC3S","HW J-Imports","","",[["JJJ72","Orange",""],["JJL69","Green",""]]],[2026,113,"Corvette C7 Z06","Nightspeed","","",[["JJJ73","Pink",""],["JJL89","White",""]]],[2026,114,"Custom '66 Toronado","Factory Fresh","","",[["JJH45","Red",""],["JJL93","Gold",""],["JPD55","Dark Aqua",""]]],[2026,115,"Custom 2020 Honda e","HW EV","","",[["JMB11","Yellow",""],["JJL64","White",""]]],[2026,116,"'87 Ford Sierra Cosworth","HW Euro","E","STH",[["JJM19","Spectraflame Pink","STH"],["JJJ74","Pink",""]]],[2026,117,"Erikenstein Rod","Rod Squad","","",[["JJJ75","Green",""],["JJL10","Light Green",""]]],[2026,118,"Pedal Driver","Rod Squad","","",[["JJJ76","Silver",""],["JJL11","Maroon",""]]],[2026,119,"'33 Ford Lo Boy","Rod Squad","","",[["JJJ77","Light Blue",""],["JJL18","White",""]]],[2026,120,"Scuderia Ferrari HP","Formula 1","","",[["JJJ78","Red",""]]],[2026,121,"2023 Nissan Z","Then and Now","","",[["JJJ79","Burnt Orange",""],["JJM34","ZAMAC",""]]],[2026,122,"Cone Shaker","HW Starting Grid","E","TH",[["JJM04","Yellow","TH"]]],[2026,123,"Maserati Tipo 61","HW Starting Grid","","",[["JJH44","White",""],["JJM39","Red",""],["JJL41","Black",""]]],[2026,124,"2016 Ford GT Race","Exoticars","F","TH",[["JJM05","Yellow","TH"]]],[2026,125,"2024 Aston Martin Vantage GT3","Exoticars","","",[["JJH55","Metalflake Teal",""],["JJL24","White",""]]],[2026,126,"'64 Dodge 330","Drag Racers","","",[["JJJ64","White",""],["JJL56","Red",""]]],[2026,127,"Custom '72 Chevy LUV","Drag Racers","","",[["JJJ80","Orange",""],["JJL63","Blue",""]]],[2026,128,"Datsun 620","Compact Kings","","",[["JPJ80","Orange",""],["JJL26","Metalflake Purple",""]]],[2026,129,"Standard Kart","Screen Time","","",[["JJJ83","White",""]]],[2026,130,"2019 Audi R8 Spyder","Drop Tops","","",[["JJJ84","Black",""],["JJL60","Silver",""]]],[2026,131,"Fiat Beast of Turin","Drop Tops","","",[["JJH48","Red",""],["JJM66","ZAMAC",""]]],[2026,132,"Bullet Proof","X-Raycers","","",[["JJJ85","Red",""],["JJL30","Black",""]]],[2026,133,"8 Crate","Wagons","","",[["JJJ86","Pink",""]]],[2026,134,"'20 Dodge Charger Hellcat","Nightspeed","","",[["JJJ87","Gray",""]]],[2026,135,"Flippin Fast","HW All Drivers Welcome","","",[["JJJ88","Aqua",""]]],[2026,136,"'98 Honda Prelude","Factory Fresh","","",[["JJJ89","Black",""],["JJL15","Teal",""]]],[2026,137,"La Troca","Layin' Low","","",[["JJJ90","Green",""]]],[2026,138,"Morgan Super 3","HW Euro","","",[["JJJ91","Gray",""],["JJL42","Yellow",""]]],[2026,139,"Bone Shaker","HW Fan Driven","","",[["JJJ92","Maroon",""],["JJL38","Gold",""]]],[2026,140,"Mid Mill","Rod Squad","","",[["JJJ93","Gray blue",""],["JJL76","Black and Orange",""]]],[2026,141,"Screamliner","Rod Squad","","",[["JJJ94","Black",""],["JJL19","Blue",""]]],[2026,142,"Mazda RX-3 (Tooned)","Tooned","","",[["JJJ95","Blue",""]]],[2026,143,"Deora Too'nd","Tooned","","",[["JJH50","Blue",""],["JJL21","Red",""]]],[2026,144,"Classic TV Series Batmobile","Batman","","",[["JJJ96","Purple",""]]],[2026,145,"El Segundo Rallye","HW Dirt","","",[["JJJ97","Flat Black",""],["JJL29","Yellow",""]]],[2026,146,"Mazda Autozam","HW Dirt","","",[["JJJ98","Purple",""]]],[2026,147,"2 Jet Z","HW Dream Garage","G","TH",[["JJM06","Gold","TH"]]],[2026,148,"Tooned Purple Passion","HW Dream Garage","","",[["JJH54","Purple",""],["JJL48","Green",""]]],[2026,149,"Honda Odyssey","HW J-Imports","","",[["JJM63","Red",""]]],[2026,150,"Dino 206 GT","Ferrari","","",[["JJH56","Red",""],["JJL74","Yellow",""]]],[2026,151,"Ford F-150 Lightning SuperTruck","Truckin' Along","","",[["JJH52","Blue",""],["JJL92","White",""]]],[2026,152,"BMW 635 CSi","HW Euro","","",[["JJK00","White",""]]],[2026,153,"'41 Willys","Rod Squad","","",[["JJK01","Light Purple",""]]],[2026,154,"Kick Sauber F1 Team","Formula 1","","",[["JJK02","Black",""]]],[2026,155,"Vairstrike","HW Mods","","",[["JJH53","Mustard Yellow",""],["JJM36","ZAMAC",""],["JJL78","Matte Red",""]]],[2026,156,"Custom Otto","Mattel","G","STH",[["JJM21","Spectraflame Blue","STH"],["JJK03","Blue",""]]],[2026,157,"'20 Toyota GR Supra","Then and Now","","",[["JJK04","Silver",""],["JJM68","Red",""]]],[2026,158,"Mach Speeder","Exoticars","","",[["JJK05","Maroon",""],["JJL55","Light Blue",""]]],[2026,159,"Honda Civic Custom","Drag Racers","F","STH",[["JJM20","Spectraflame Teal","STH"],["JJJ81","Teal",""]]],[2026,160,"Lotus Sport Elise","Compact Kings","H","STH",[["JJM22","Spectraflame Orange","STH"],["JJK07","Orange",""]]],[2026,161,"'70 Ford Escort RS1600","HW Dirt","","",[["JJK08","Brown",""],["JJL58","Silver",""]]],[2026,162,"Total Disposal","HW Heavyweights","H","TH",[["JJM07","Orange","TH"]]],[2026,163,"Cadillac Celestiq","HW EV","","",[["JJH49","Metalflake Blue",""],["JJL84","Green",""]]],[2026,164,"Classic '55 Nomad","Wagons","","",[["JJK10","Flat Black",""],["JJM55","Silver",""]]],[2026,165,"Gone Mad","Wagons","","",[["JJK09","Metalflake Copper",""],["JJL67","Green",""]]],[2026,166,"Twin Tags","Experimotors","","",[["JJH64","Red",""],["JJL73","White",""]]],[2026,167,"Head Gasket","HW All Drivers Welcome","","",[["JJH11","Orange and Green",""]]],[2026,168,"Mailed It!","Team Wheels","","",[["JJH12","Blue",""],["JJL75","Silver",""]]],[2026,169,"Super Twin Mill","Hot Wheels Let's Race","","",[["JJH13","White",""]]],[2026,170,"'64 Lincoln Continental","Cool Classics","","",[["JJK14","Orange",""]]],[2026,171,"1983 Porsche 928S","HW Euro","","",[["JJH15","Black",""]]],[2026,172,"Tooned Volkswagen Golf Mk1","Tooned","","",[["JJK16","White",""],["JJL52","Yellow",""],["JJM56","Purple",""]]],[2026,173,"Ferrari F2004","HW Starting Grid","","",[["JJH51","Red",""]]],[2026,174,"Duck N' Roll","HW Dirt","","",[["JJK17","Orange",""],["JJL59","Pink",""]]],[2026,175,"'94 Audi Avant RS2","Wagons","","",[["JJK18","Gray",""],["JJL85","Yellow",""]]],[2026,176,"Subaru Impreza","HW J-Imports","J","STH",[["JJM23","Spectraflame Blue","STH"],["JJK19","Metalflake Blue",""]]],[2026,177,"'88 Mitsubishi Starion","HW J-Imports","","",[["JJH58","White",""],["JJM54","Red",""],["JJL70","Flat Black",""]]],[2026,178,"Click Shift","HW All Drivers Welcome","","",[["JJH61","ZAMAC",""],["JJL90","Orange",""]]],[2026,179,"Mountain Mauler","Hot Wheels Let's Race","","",[["JJK20","Yellow",""]]],[2026,180,"'55 Chevy","Cool Classics","","",[["JJK21","Red",""]]],[2026,181,"Mercedes-Benz CLA HW","HW Euro","","",[["JJH63","Blue",""],["JJL97","Sand",""]]],[2026,182,"Chop 'n Bloc","Rod Squad","","",[["JJH60","Off White",""],["JJL77","Red",""]]],[2026,183,"'70 Buick GSX","HW Torque","","",[["JJK23","Gold",""],["JJM37","ZAMAC",""]]],[2026,184,"'68 Shelby GT500","HW Torque","","",[["JJK24","Olive Green",""]]],[2026,185,"Aston Martin Aramco Formula One Team","Formula 1","","",[["JJK25","Metalflake Green",""]]],[2026,186,"Amaru GTC","HW Mods","J","TH",[["JJM08","Blue","TH"]]],[2026,187,"PT Fast","HW Mods","","",[["JJH59","Blue",""]]],[2026,188,"'70 Dodge Charger (Tooned)","Tooned","","",[["JJK26","White",""]]],[2026,189,"'11 Corvette Grand Sport","Then and Now","","",[["JJK27","White",""]]],[2026,190,"'82 Toyota Supra","Then and Now","","",[["JJK28","Silver",""]]],[2026,191,"'65 Mercury Comet Cyclone","Drag Racers","","",[["JJK06","Red",""],["JJM53","Yellow",""],["JJL46","White",""]]],[2026,192,"Fiat 500C","Drag Racers","","",[["JJK29","Purple",""]]],[2026,193,"'63 Chevy II","Compact Kings","","",[["JJK31","Light Blue",""]]],[2026,194,"Lil' Roar","HW Dirt","","",[["JJK32","White",""]]],[2026,195,"Spider-Mobile","Screen Time","","",[["JJK33","Red",""]]],[2026,196,"Sweet Driver","Sweet Rides","K","TH",[["JJM09","Cream","TH"]]],[2026,197,"Mad Drip","Sweet Rides","","",[["JJH57","Pink",""]]],[2026,198,"Toyota AE86 Sprinter Trueno","HW J-Imports","","",[["JJK34","Purple",""],["JJL87","Cream",""]]],[2026,199,"Nissan Skyline GT-R (BNR34)","HW J-Imports","","",[["JJK35","Blue",""],["JJL88","Black",""]]],[2026,200,"Punk Rod","Team Wheels","","",[["JJK36","Blue",""],["JJL91","White",""]]],[2026,201,"1970 Pontiac Firebird","Team Wheels","","",[["JJM65","Flat Black",""],["JJK37","Blue",""]]],[2026,202,"Street Shaker","Trophy Case","","",[["JJK38","Metalflake Blue",""]]],[2026,203,"Street Shrieker","Hot Wheels Let's Race","","",[["JJK39","Purple",""]]],[2026,204,"Mod Mill","Cool Classics","","",[["JJK40","Matte Black",""],["JJL94","Red",""]]],[2026,205,"Jaguar XJC V12 Coupe","HW Euro","","",[["JJK22","Green",""],["JJL96","Black",""]]],[2026,206,"Bully Goat","HW Torque","","",[["JJK41","Red",""],["JJL98","Light Blue",""]]],[2026,207,"'18 Camaro SS","HW Torque","","",[["JJK42","White",""]]],[2026,208,"Porsche 911 Carrera RS 2.7","Then and Now","M","STH",[["JJM24","Spectraflame Brown","STH"],["JJK43","Brown",""]]],[2026,209,"Mini JCW Electric","Then and Now","","",[["JJH62","Light Green",""],["JJL99","Dark Green",""]]],[2026,210,"'19 Mercedes-Benz A-Class","Compact Kings","","",[["JJK44","Black",""]]],[2026,211,"1972 Datsun Sunny Coupe","Compact Kings","","",[["JJH66","Orange",""],["JJM41","ZAMAC",""]]],[2026,212,"Hyper Rocker","HW Dirt","","",[["JJK45","Lime",""]]],[2026,213,"'21 Ford Bronco","HW Dirt","","",[["JJK46","White",""]]],[2026,214,"'68 Corvette Gas Monkey Garage","Screen Time","","",[["JJK47","Gold",""]]],[2026,215,"Lil' Mad","Wagons","","",[["JJH65","Metalflake Gold",""]]],[2026,216,"HW Test Ride","Trophy Case","","",[["JJH68","Yellow",""]]],[2026,217,"Mad Manga","Hot Wheels Let's Race","L","TH",[["JJM10","White","TH"]]],[2026,218,"Alfa Romeo Giulia TI Super","Cool Classics","","",[["JJK48","Metalflake Green",""]]],[2026,219,"Project Twin Mill","Cool Classics","","",[["JJH67","White",""]]],[2026,220,"Custom '62 Chevy Pickup","Rod Squad","","",[["JJK49","Black",""]]],[2026,221,"'96 Dodge Viper GTS","HW Torque","","",[["JJK50","Black",""]]],[2026,222,"'94 Toyota Supra (Tooned)","Tooned","K","STH",[["JJM25","Spectraflame Black","STH"],["JJK51","Black",""]]],[2026,223,"2019 Audi TT Safari","HW Dirt","","",[["JJH69","White",""]]],[2026,224,"1970 Custom Plymouth Roadrunner","Screen Time","","",[["JJK52","Burnt Orange",""]]],[2026,225,"Nissan Maxima Drift Car","Wagons","L","STH",[["JJM26","Black",""],["JJK53","Black",""]]],[2026,226,"Salt Streaker","Team Wheels","","",[["JJH71","Blue",""]]],[2026,227,"'71 Lamborghini Miura SV","Cool Classics","","",[["JJK54","Purple",""]]],[2026,228,"'66 Buick Riviera","Cool Classics","","",[["JJK55","Copper Brown",""]]],[2026,229,"Ford Model A Custom '31","Rod Squad","M","TH",[["JJM11","Gray Blue","TH"]]],[2026,230,"Uncertain-T","Rod Squad","","",[["JJH70","Red",""]]],[2026,231,"'68 Mercury Cougar","HW Torque","","",[["JJK56","Purple",""]]],[2026,232,"Slide-Burn","HW Torque","","",[["JJK57","Turquoise",""]]],[2026,233,"Armored Batmobile","Batman","","",[["JJH72","Black",""]]],[2026,234,"'23 Ram 1500","HW Dirt","N","STH",[["JJM27","Spectraflame Purple","STH"],["JJK58","Purple",""]]],[2026,235,"Party Wagon","Screen Time","","",[["JJK59","Yellow",""]]],[2026,236,"Mickey Mouse Car","Screen Time","","",[["JJH74","Red",""]]],[2026,237,"Circle Tracker","HW All Drivers Welcome","","",[["JJK60","Light Blue",""]]],[2026,238,"Fast Fish","Team Wheels","N","TH",[["JJM12","Blue","TH"]]],[2026,239,"Go-Realla-Fast","Trophy Case","","",[["JJH75","Black",""]]],[2026,240,"Surf 'N Turf","Hot Wheels Let's Race","","",[["JJK61","Teal",""]]],[2026,241,"1963 Ford Galaxie","Cool Classics","","",[["JJH73","Blue",""]]],[2026,242,"'96 Chevrolet Impala SS","HW Torque","","",[["JJK62","Metalflake Teal",""]]],[2026,243,"Aston Martin DB5 Safari Edition","HW Dirt","","",[["JJH76","White",""]]],[2026,244,"Nissan Skyline HT 2000GT-X","Screen Time","P","TH",[["JJM13","Black","TH"]]],[2026,245,"'70 Plymouth AAR Cuda","HW Torque","P","STH",[["JJM28","Spectraflame Gold","STH"],["JJK63","Yellow",""]]],[2026,246,"Ridge Crest GT","HW Torque","","",[["JJH77","Green",""]]],[2026,247,"Gazella GT","","","",[["JJM14","Red",""]]],[2026,248,"Custom Vanster","Trophy Case","","",[["JJH79","Silver",""]]],[2026,249,"'67 Pontiac Firebird 400","Cool Classics","Q","STH",[["JJM29","Spectraflame Blue","STH"],["JJK64","Blue",""]]],[2026,250,"Porsche 908-3","Cool Classics","","",[["JJH78","Gulf Racing Blue",""]]],[2025,1,"Mazda MX-5 Miata","HW Dream Garage","","",[["HYW18","Gunmetal gray",""],["HYX57","Lime Green",""]]],[2025,2,"Batman and Robin Batmobile","Batman","","",[["HYX61","Blue",""],["HYW60","Black",""]]],[2025,3,"Monster High Ghoul Mobile","HW Screen Time","","",[["HYW61","Purple",""],["HYX62","Black",""]]],[2025,4,"Nissan Skyline GT-R (BNR32)","HW Screen Time","","",[["HYY72","Metalflake Dark Gray",""]]],[2025,5,"Purple Passion","HW Designed By","","",[["HYW63","Purple",""],["HYX55","White",""]]],[2025,6,"Kowloon'd Hypervan","HW Metro","","",[["HYX75","Yellow",""],["HYW64","Red",""]]],[2025,7,"Small Bloc","HW Metro","","",[["HYW65","Yellow",""],["HYY40","Red",""],["HYX56","Black",""]]],[2025,8,"Mazda Autozam","HW Dream Garage","","",[["HYY10","ZAMAC",""],["HYW66","Red",""],["HYX45","Sand",""]]],[2025,9,"Tesla Model S Plaid","HW EV","","",[["HYW86","Deep Red",""],["HYX58","White",""]]],[2025,10,"Deora III","HW EV","","",[["HYX47","Red",""],["HYW67","Purple",""]]],[2025,11,"Kei Swap","HW Art Cars","","",[["HYW14","Gray",""],["HYX95","Pink",""]]],[2025,12,"Custom '53 Chevy","HW Art Cars","","",[["HYY11","ZAMAC",""],["HYW68","Teal",""]]],[2025,13,"Nerve Hammer","X-Raycers","","",[["HYX66","Purple",""],["HYW69","Black",""]]],[2025,14,"Draftnator","X-Raycers","","",[["HYY31","Yellow",""],["HYX67","Black",""],["HYW70","Green",""]]],[2025,15,"Morgan Super 3","Factory Fresh","","",[["HYW13","Teal",""],["HYY33","Bronze",""],["HYX48","Flat Red",""]]],[2025,16,"'87 Audi quattro","Factory Fresh","A","STH",[["JBC35","Spectraflame Aqua","STH"],["HYW72","Green",""]]],[2025,17,"Ford Performance Supervan 4","HW First Response","A","TH",[["JBC20","Red","TH"]]],[2025,18,"Alpha Pursuit","HW First Response","","",[["HYX49","Red",""],["HYW71","Lime Green",""]]],[2025,19,"Super Twin Mill","Hot Wheels Let's Race","","",[["HYW12","White",""],["JBB72","Metalflake Green",""]]],[2025,20,"'21 Ford Bronco","HW Hot Trucks","","",[["HYW73","Gray",""],["HYY32","Light Blue",""],["HYX50","Yellow",""]]],[2025,21,"'67 Chevy C10","HW Hot Trucks","","",[["HYW74","Light Blue",""],["HYX51","Black",""]]],[2025,22,"Bogzilla","HW Ride-Ons","","",[["HYW75","Green",""]]],[2025,23,"Kick Kart","HW Ride-Ons","","",[["HYW76","White",""],["JBB90","Black",""]]],[2025,24,"Custom Cadillac Fleetwood","Rod Squad","","",[["HYY39","Red",""],["HYW77","Green",""]]],[2025,25,"Max Steel","Rod Squad","","",[["HYW78","Blue",""],["HYX53","Gray",""]]],[2025,26,"Nissan Skyline 2000GT-R LBWK","HW J-Imports","","",[["HYW79","Purple",""],["HYY30","Silver",""],["HYX54","Blue",""]]],[2025,27,"Twin Mill Gen-E","HW Celebration Racers","","",[["HYW80","Green",""]]],[2025,28,"'90 Honda Civic EF","HW: '70s vs '90s","","",[["HYY38","Red",""],["HYW81","Blue",""],["HYX90","Lime Green",""]]],[2025,29,"'94 Audi Avant RS2","HW: '70s vs '90s","","",[["HYW82","Maroon",""],["HYX60","White",""]]],[2025,30,"Standard Kart","HW Screen Time","","",[["HYW83","White",""]]],[2025,31,"X-34 Landspeeder","HW Screen Time","","",[["HYW84","Light Brown",""]]],[2025,32,"Fish'd & Chip'd","HW Designed By","B","TH",[["JBC21","Brown and Cream","TH"]]],[2025,33,"Fiat 500e","HW EV","","",[["HYW85","Metalflake Gold",""]]],[2025,34,"Ford Mustang GTD","Mustang 60th","","",[["HYW19","Metallic Silver",""],["JBB93","Blue",""]]],[2025,35,"The Vanster","HW Art Cars","","",[["HYX65","Red",""],["HYY87","Blue",""]]],[2025,36,"DMC DeLorean","HW Art Cars","","",[["HYW88","Black",""],["HYX59","Metalflake Teal",""]]],[2025,37,"Crescendo","X-Raycers","","",[["HYX85","Green",""],["HYW89","Blue",""]]],[2025,38,"Proton Saga","Factory Fresh","","",[["HYW90","White",""]]],[2025,39,"2020 Ram 1500 Rebel","HW First Response","","",[["HYW91","White",""],["HYY42","Red",""]]],[2025,40,"Donut Drifter","Hot Wheels Let's Race","","",[["HYW92","Pink",""]]],[2025,41,"Lamborghini Huracán Sterrato","Safari Mode","","",[["HYW93","White",""],["HYY45","Black",""],["JBB86","Yellow",""]]],[2025,42,"Haulerback","HW Hot Trucks","","",[["HYX68","Light Blue",""],["HWY17","Yellow",""]]],[2025,43,"'80 El Camino","HW Hot Trucks","","",[["HYW94","Maroon",""]]],[2025,44,"1988 Jeep Wagoneer","HW Hot Trucks","","",[["HYY13","ZAMAC",""],["HYW95","Mauve",""]]],[2025,45,"'55 Chevy","Rod Squad","","",[["HYW96","Black",""],["HYY15","ZAMAC",""]]],[2025,46,"Hirohata Merc","Rod Squad","B","STH",[["JBC36","Spectraflame purple","STH"],["HYW97","Purple",""]]],[2025,47,"Mazda REPU","HW J-Imports","","",[["HYW98","Sand",""]]],[2025,48,"Subaru BRZ","HW J-Imports","","",[["HYW99","Blue",""],["HYY12","ZAMAC",""],["JBB55","White",""]]],[2025,49,"'22 Ford Maverick Custom","HW Modified","","",[["HYX00","Yellow",""]]],[2025,50,"'66 Buick Riviera","HW Modified","","",[["HYW16","Teal",""],["JBB56","Black",""]]],[2025,51,"'69 Corvette Racer","HW Celebration Racers","","",[["HYX01","White",""]]],[2025,52,"Mercedes-Benz 500 E","HW: '70s vs '90s","","",[["HYX02","Metalflake Green",""],["HYY43","Metalflake Maroon",""],["JBB60","Metalflake Silver",""]]],[2025,53,"'70 Chevy Camaro RS","HW: '70s vs '90s","","",[["HYX03","Metalflake Gold",""]]],[2025,54,"Batman: Arkham Asylum Batmobile","Batman","","",[["HYX81","Black",""],["HYX04","Metalflake Bronze",""]]],[2025,55,"Humvee","HW Dirt","","",[["HYX05","Red",""]]],[2025,56,"'70 Dodge Power Wagon","HW Dirt","","",[["HYX26","Lime Green",""]]],[2025,57,"Mailed It!","HW Metro","C","TH",[["JBC22","Purple","TH"]]],[2025,58,"Maserati Shamal","HW Metro","","",[["HYW21","Red",""],["HYX76","Black",""]]],[2025,59,"Oracle Red Bull Racing","Track Aces","","",[["HYW10","Black",""]]],[2025,59,"Williams Racing","Track Aces","","",[["JBC07","Blue",""]]],[2025,59,"Mercedes-AMG Petronas Formula One Team","Track Aces","","",[["HYX78","Black",""]]],[2025,60,"Supercharged","HW EV","","",[["HYX06","Blue",""],["HYX64","White",""]]],[2025,61,"Hi-Roller II","HW Art Cars","C","STH",[["JBC37","Spectraflame Black","STH"],["HYX07","Black",""]]],[2025,62,"Datsun 240Z","HW Art Cars","","",[["JJB80","Light Blue",""],["HYY44","Red",""],["JBB66","Light Pink",""]]],[2025,63,"Monteracer","X-Raycers","","",[["HYX86","Green",""],["HYX09","Purple",""]]],[2025,64,"Arrow Dynamic","X-Raycers","","",[["HYX98","Orange",""],["HYX10","Red",""]]],[2025,65,"El Viento","X-Raycers","","",[["HYY06","Red",""],["HYX11","Blue",""]]],[2025,66,"Street Shrieker","Hot Wheels Let's Race","","",[["HYW20","Purple",""],["JBC08","Blue",""]]],[2025,67,"Rodger Dodger","Hot Wheels Let's Race","","",[["HYX12","White",""]]],[2025,68,"Draggin' Wagon","HW Ride-Ons","","",[["JHV10","Purple",""],["HYX69","Green",""]]],[2025,69,"Hi-Roller","Rod Squad","","",[["HYX14","Blue",""],["HYX70","Pink",""]]],[2025,70,"HW50 Concept","Rod Squad","","",[["HYX15","Military Green",""],["HYX71","Metalflake Purple",""]]],[2025,71,"Punk Rod","HW Modified","","",[["HYX72","Red",""],["HYY16","ZAMAC",""],["HYX16","Purple",""]]],[2025,72,"Cupra e-Racer","HW EV","","",[["HYW15","Purple",""],["HYX46","Silver",""]]],[2025,73,"2020 Ford Mustang Shelby GT500","Mustang 60th","","",[["JBB16","Orange",""],["HYY41","Red",""]]],[2025,74,"Porsche 911 GT3","HW Race Day","","",[["HYX17","Black",""]]],[2025,75,"Jaguar Mk1","HW Race Day","","",[["HYX19","Maroon",""],["JBB58","Gunmetal gray",""]]],[2025,76,"'74 Brazilian Dodge Charger","HW Celebration Racers","","",[["HYX20","White",""]]],[2025,77,"BMW 2002","HW: '70s vs '90s","","",[["HYX21","Yellow",""],["HYY14","ZAMAC",""],["JBB61","Blue",""]]],[2025,78,"'71 Lamborghini Miura SV","HW: '70s vs '90s","","",[["HYX22","Red",""],["HYX73","Black",""],["HYY27","Light Blue",""]]],[2025,79,"Toyota GR86 Cup","Compact Kings","","",[["HYX23","Orange",""],["HYX74","Brown",""]]],[2025,80,"'15 Mazda MX-5 Miata","Compact Kings","","",[["JBB18","Metalflake Red",""]]],[2025,81,"Chevy Blazer 4x4","HW Dirt","","",[["HYX25","White",""],["JBB78","Brown",""]]],[2025,82,"Tesla Cyberquad","HW Dirt","","",[["HYW31","ZAMAC",""],["HYX91","Bronze",""]]],[2025,83,"K.I.T.T.","HW Screen Time","","",[["HYX27","Black",""]]],[2025,84,"Gotta Go","HW Designed By","","",[["HYY73","Black",""],["HYX94","Red",""]]],[2025,85,"Street Wiener","Fast Foodie","","",[["HYX29","Black",""],["HYX83","Red",""]]],[2025,86,"Silverado EV RST","HW EV","","",[["HYX30","White",""],["JBB64","Metalflake Orange",""],["HYY28","Tan",""]]],[2025,87,"'70 Plymouth Superbird","HW Art Cars","","",[["HYX31","Yellow",""],["HYX96","Red",""]]],[2025,88,"Ain't Fare","HW Art Cars","","",[["HYX32","Purple",""],["JBB67","Light Blue",""]]],[2025,89,"Stockar","X-Raycers","","",[["HYX33","Orange",""],["HYX99","Blue",""]]],[2025,90,"Gordon Murray Automotive T.33","Factory Fresh","","",[["HYW23","Silver",""],["HYY48","Red",""],["JBB70","Teal",""]]],[2025,91,"Cruise Bruiser","HW Reverse Rake","","",[["HYX34","Pink",""],["HYX77","Yellow",""]]],[2025,92,"Dune It Up","Track Aces","","",[["HYX35","White",""],["HYX87","Red",""]]],[2025,93,"1975 Datsun Sunny Truck (B120)","HW Hot Trucks","D","STH",[["JBC38","Spectraflame Blue","STH"],["HYX36","Blue",""]]],[2025,94,"'99 Ford F-150 SVT Lightning","HW Hot Trucks","","",[["HYX37","Black",""],["JBB53","Tan",""]]],[2025,95,"Pedal Driver","HW Ride-Ons","D","TH",[["JBC23","Red","TH"]]],[2025,96,"'23 Ram 1500","HW Reverse Rake","","",[["HYY54","Black",""]]],[2025,97,"Mid Mill","Rod Squad","","",[["HYX39","Maroon",""],["HYX79","Teal",""]]],[2025,98,"Hako Type D","HW J-Imports","","",[["HYW25","White",""],["HYX80","Red",""]]],[2025,99,"Cadillac Project GTP Hypercar","HW Exotics","","",[["HYX40","Yellow",""],["HYY36","ZAMAC",""],["JBB91","Red",""]]],[2025,100,"Porsche 904 Carrera GTS","HW Race Day","","",[["HYX41","Yellow",""],["HYY03","Black",""],["JBC54","Light Green",""]]],[2025,101,"Chevy Super Volt","HW EV","","",[["HYY99","Olive Green",""]]],[2025,102,"'76 Chevy Chevette","Compact Kings","","",[["HYX43","Yellow",""]]],[2025,103,"TV Series Batmobile","Batman","","",[["HYX44","Metalflake Silver",""],["HYY05","Maroon",""]]],[2025,104,"Optimus Prime","HW Screen Time","","",[["HYW26","Red",""]]],[2025,105,"RD-06","HW Designed By","","",[["HYX82","Green",""],["HYY50","Black and Green",""]]],[2025,106,"Sushi Tuner","Fast Foodie","","",[["HYY51","White and Orange",""],["JBC01","White and Red",""]]],[2025,107,"Aston Martin DB4GT High-Speed Edition","HW Dream Garage","E","STH",[["JBC39","Spectraflame Yellow","STH"],["HYY52","Yellow",""]]],[2025,108,"Slide-Burn","HW Dream Garage","","",[["HYW28","Pink",""],["HYX84","Metalflake Olive",""]]],[2025,109,"Power Rocket","X-Raycers","","",[["HYY53","Green",""],["JBB69","Pink",""]]],[2025,110,"Rig Storm","X-Raycers","E","TH",[["JBC24","Purple","TH"]]],[2025,111,"'58 Chevy Impala","Rod Squad","","",[["HYX38","Metalflake Brown",""]]],[2025,112,"Later Crater","HW Reverse Rake","","",[["HYY55","Red",""],["JBB71","Purple",""]]],[2025,113,"Ford Escort","Compact Kings","","",[["JBB17","Black",""],["JBB99","Purple",""]]],[2025,114,"Drift-Ender","HW First Response","","",[["HYW27","White",""],["HYY00","Light Blue",""]]],[2025,115,"'75 Chevy Blazer Custom","HW Dirt","","",[["JBB19","Black",""],["HYY49","Red and White",""],["HYY01","White",""]]],[2025,116,"Slide Kick","Experimotors","","",[["HYY57","Gold",""],["HYY02","Aqua",""]]],[2025,117,"Flippin Fast","Experimotors","","",[["HYY58","Black",""],["HYX88","Yellow & Gray",""]]],[2025,118,"Skull Shaker","Experimotors","","",[["HYY59","Teal",""],["JBB73","White",""]]],[2025,119,"'91 GMC Syclone","HW Hot Trucks","","",[["HYY60","Purple",""],["JBB89","Red",""]]],[2025,120,"Custom Kia EV6","HW EV","","",[["HYW22","Purple",""],["HYX63","Aqua",""]]],[2025,121,"'67 Ford Mustang Coupe","Then and Now","","",[["HYY62","White",""]]],[2025,122,"Range Rover Velar","Then and Now","","",[["HYY63","Metalflake Bronze",""]]],[2025,123,"2018 Honda Civic Type R","Then and Now","","",[["HYY64","Red",""],["JBB77","Blue",""],["HYY26","Yellow",""]]],[2025,124,"Futurismo","HW Race Day","","",[["HYY65","Silver",""],["HYX89","Light Purple",""]]],[2025,125,"2020 Koenigsegg Jesko","HW Race Day","","",[["HYY66","Yellow",""],["JBB59","Metalflake Blue",""]]],[2025,126,"HW Formula Solar","HW Celebration Racers","","",[]],[2025,127,"'92 Ford Mustang","HW: '70s vs '90s","","",[["HYY68","Black",""]]],[2025,128,"RRRoadster","Compact Kings","","",[["HYY69","Green",""],["JBB97","Black",""]]],[2025,129,"'68 Dodge Dart","Compact Kings","","",[["HYY70","Purple",""]]],[2025,130,"'20 Jeep Gladiator","HW Dirt","F","STH",[["JBC40","Spectraflame Smoke","STH"],["HYY71","Black",""]]],[2025,131,"'71 Dodge Challenger","Muscle Mania","","",[["HYY79","Orange",""]]],[2025,132,"Snoopy","HW Screen Time","","",[["HYW62","Red",""]]],[2025,133,"Monster Dairy Delivery","HW Designed By","","",[["HYX28","Cream",""],["HYX93","Light Blue",""]]],[2025,134,"'68 Corvette - Gas Monkey Garage","HW Dream Garage","","",[["HYY74","Green",""],["HYY46","White",""]]],[2025,135,"Long Bloc","HW Art Cars","","",[["HYW30","Blue",""],["HYX97","Green",""]]],[2025,136,"Salt Shaker","X-Raycers","","",[["HYY75","Green",""],["JBB80","Red",""]]],[2025,137,"Rapid Pulse","HW First Response","","",[["HYY76","Yellow",""],["JBB50","Light Blue",""]]],[2025,138,"Pixel Shaker","HW Ride-Ons","","",[["HYY77","Red",""],["JBB54","Light Blue",""]]],[2025,139,"Custom '53 Cadillac","Rod Squad","","",[["HYY78","Blue",""]]],[2025,140,"Ford Model A Custom '31","HW Dirt","","",[["HYW24","Red",""],["HYX92","Green",""]]],[2025,141,"'85 Honda City Turbo II","HW J-Imports","F","TH",[["JBC25","Teal","TH"]]],[2025,142,"McLaren W1","HW Race Day","","",[["HYW41","Orange",""],["JBC17","Black",""]]],[2025,143,"Birthday Burner","HW Celebration Racers","G","TH",[["JBC26","White","TH"]]],[2025,144,"Nissan Skyline GT-R (BCNR33)","HW: '70s vs '90s","","",[["HYY80","Metalflake Black",""],["HYY04","Metalflake Blue",""]]],[2025,145,"Batmobile","Batman","","",[["HYY81","Black",""]]],[2025,146,"Minecart","HW Screen Time","","",[["HYY82","Gray",""]]],[2025,147,"Chevy El Camino","HW Screen Time","","",[["HYY83","Flat Black",""]]],[2025,148,"Cone Shaker","HW Metro","","",[["HYW35","Orange",""],["JBB62","Lime Green",""]]],[2025,149,"Quick Bite","Fast Foodie","","",[["HYY84","Light Blue",""],["JBB63","Maroon",""]]],[2025,150,"Honda CB750 Café","HW Moto","","",[["HYY85","Metalflake Maroon",""],["HYY37","Tan",""],["JBB79","Light Blue",""]]],[2025,151,"Rodger Dodger 2.0","HW EV","","",[["HYY86","White",""],["JBB65","Silver",""]]],[2025,152,"'19 Chevy Silverado Trail Boss LT","HW Dirt","","",[["HYY97","Metalflake Blue",""]]],[2025,153,"Buns of Steel","Hot Wheels Let's Race","","",[["HYY88","Metalflake Teal",""]]],[2025,154,"Porsche 911 Rallye","Safari Mode","G","STH",[["JBC41","Spectraflame Green","STH"],["HYW87","Dark Green",""]]],[2025,155,"Big-Air Bel-Air","Safari Mode","","",[["HYY89","Red",""],["JBB51","Blue",""]]],[2025,156,"HW Ultimate T-Rex Transporter","Experimotors","","",[["HYY90","Green",""],["JBC10","Orange",""]]],[2025,157,"'83 Chevy Silverado","HW Hot Trucks","","",[["HYY91","Light Blue",""],["JMT29","Black",""]]],[2025,158,"Hoto Roto","Rod Squad","","",[["HYW33","Slate Blue",""],["JBB74","White",""]]],[2025,159,"Ford GT","HW Modified","","",[["HYY92","White",""],["JBB75","Black",""]]],[2025,160,"Crate Racer","Experimotors","","",[["JBB02","Black",""],["JBB87","Red",""]]],[2025,161,"'67 Shelby GT500","Mustang 60th","","",[["HYY93","White",""],["JBB94","Black",""]]],[2025,162,"2018 Bentley Continental GT3","HW Race Day","","",[["JBB30","Metalflake Black",""],["JBC18","Metalflake Gold",""]]],[2025,163,"'95 Mazda RX-7 Drift","HW: '70s vs '90s","","",[["HYY95","Yellow",""],["JBB57","Red",""]]],[2025,164,"'70 Dodge Hemi Challenger","HW: '70s vs '90s","","",[["HYY96","Metalflake Purple",""]]],[2025,165,"'69 Mercury Cyclone","Muscle Mania","","",[["HYY61","Metalflake Red",""]]],[2025,166,"Disney Steamboat","HW Screen Time","","",[["HYY98","White",""]]],[2025,167,"Mattel Dream Mobile","HW Celebration Racers","","",[["HYX42","Metalflake Red",""]]],[2025,168,"Nissan Leaf NISMO RC_02","HW EV","J","TH",[["JBC27","Lime Green","TH"]]],[2025,169,"'67 Austin Mini Van","HW Art Cars","","",[["JBB00","Orange",""],["JBB68","Light Blue",""]]],[2025,170,"Madfast","Track Aces","","",[["JBB01","Cream",""],["HYY09","Maroon",""]]],[2025,171,"Amaru GTC","Safari Mode","","",[["HYW36","Orange",""],["JBB52","Yellow",""]]],[2025,172,"Renault Espace F1","HW Modified","","",[["HYW32","Yellow",""],["JBB76","Black",""]]],[2025,173,"1978 Dodge Li'l Red Express Truck","HW Hot Trucks","","",[["JBB03","White",""]]],[2025,174,"Peugeot 9X8 Hypercar","HW Exotics","","",[["HYW11","White",""]]],[2025,175,"'71 Mustang Funny Car","Mustang 60th","H","STH",[["JBC42","Spectraflame Red","STH"],["JBB04","Red",""]]],[2025,176,"'96 Dodge Viper GTS","Then and Now","","",[["HYW50","Blue",""],["JBB95","Yellow",""]]],[2025,177,"Vespa 90 SS Super Sprint 1966","HW Moto","","",[["JBB07","White",""]]],[2025,178,"'17 Ford F-150 Raptor","HW Dirt","","",[["JBB05","Blue",""],["HYY19","ZAMAC",""]]],[2025,179,"'15 Land Rover Defender Double Cab","HW Dirt","","",[["JBB06","Maroon",""],["HYY35","Flat Green",""],["JBC00","Yellow",""]]],[2025,180,"Chill Mill","Fast Foodie","H","TH",[["JBC28","Purple","TH"]]],[2025,181,"Honda Motocompo","HW Moto","","",[["HYW43","Red",""],["JBC03","Yellow",""]]],[2025,182,"'62 Corvette Gasser","HW Reverse Rake","J","STH",[["JBB08","Light Gray",""],["JBC43","Spectraflame Black","STH"]]],[2025,183,"Drift'n Break","HW Wagons","","",[["JBB09","Orange",""],["JBC06","Silver",""]]],[2025,184,"Track Dwagon","HW Wagons","","",[["JBB10","White",""],["HYY34","Yellow",""],["JBB81","Blue",""]]],[2025,185,"BMW 635 CSi","Wild Widebody","","",[["HYW38","Metalflake Black",""],["JBB84","Orange",""]]],[2025,186,"'89 Mercedes-Benz 560 SEC AMG","Wild Widebody","","",[["JBB11","Silver",""],["JBB85","Blue",""]]],[2025,187,"Porsche 911 Carrera Clip","Experimotors","","",[["JBB12","Red",""],["JBC11","Light Blue",""]]],[2025,188,"Decidedly Go","Experimotors","","",[["HYW39","Metalflake Purple",""],["JBC12","Teal",""]]],[2025,189,"'67 Mustang","Muscle Mania","","",[["JBB13","Black",""]]],[2025,190,"Gordon Murray Automotive T.50s","HW Exotics","","",[["JBB14","Light Blue",""]]],[2025,191,"Ferrari SF90 Stradale","Factory Fresh","","",[["HYW34","Red",""],["HYY08","Metalflake Gray",""]]],[2025,192,"Czinger 21C","Peak Pursuit","","",[["JBB31","Orange",""],["JBB96","White",""]]],[2025,193,"'68 Lotus Type 49","HW Race Day","","",[["HYX18","Red",""],["HYY17","Silver",""]]],[2025,194,"Formula E Gen3","Track Aces","","",[["HYY56","Black",""]]],[2025,195,"Alfa Romeo Giulia TI Super","Compact Kings","","",[["HYW40","Red",""],["JBB98","White",""]]],[2025,196,"Mazda RX-3","Compact Kings","","",[["HYX24","Matte Black",""]]],[2025,197,"Hot Wheengs","Fast Foodie","","",[["HYW42","Red",""],["JBC02","Yellow",""]]],[2025,198,"Ferrari F40 Competizione","HW Exotics","","",[["HYW59","Red",""],["JBB92","Yellow",""]]],[2025,199,"Audi 90 quattro","Peak Pursuit","","",[["JBB20","Silver",""],["JBC04","Black",""]]],[2025,200,"VW T3 Custom","Peak Pursuit","","",[["JBB21","Blue and Cream",""],["HYY47","Red and White",""],["JBC05","Yellow and Cream",""]]],[2025,201,"Honda Civic Custom","HW Reverse Rake","","",[["JBB22","Blue and Red",""]]],[2025,202,"Chevroletor","Track Aces","K","TH",[["JBC29","Blue and White","TH"]]],[2025,203,"Lil' Roar","Safari Mode","","",[["HYW44","Red",""]]],[2025,204,"Terra-Tracktyl","HW Track Champs","","",[["JBB23","White",""],["JBB82","Silver",""]]],[2025,205,"Pontiac Aztek Custom","Wild Widebody","","",[["JBB24","Gray",""],["JBC09","Silver",""]]],[2025,206,"Speed Driver","Experimotors","","",[["JBB25","Blue",""],["JBB88","Black",""]]],[2025,207,"Ravenger S/T","Muscle Mania","","",[["JBB26","Matte Blue",""],["JBC14","Orange",""]]],[2025,208,"'69 Dodge Coronet Super Bee","Muscle Mania","","",[["JBB27","Yellow",""]]],[2025,209,"McLaren Speedtail","HW Exotics","K","STH",[["JBC44","Spectraflame Orange","STH"],["JBB28","Red",""]]],[2025,210,"Land Rover Defender 90","Then and Now","","",[["JBB29","Cream",""],["HYY18","ZAMAC",""]]],[2025,211,"Custom '18 Ford Mustang GT","Mustang 60th","","",[["HYY94","Blue",""]]],[2025,212,"Honda S800 Racing","Compact Kings","L","TH",[["JBC30","Orange","TH"]]],[2025,213,"Lotus Cortina","Compact Kings","","",[["HYW46","White",""]]],[2025,214,"2013 SRT Viper","Then and Now","","",[["JBB15","White",""]]],[2025,215,"Blitzspeeder","HW Track Champs","","",[["JBB32","Green",""],["JBB83","Light Blue",""]]],[2025,216,"Quick Chat","Experimotors","","",[["HYW45","White",""],["JBC13","Silver",""]]],[2025,217,"King Kuda","Muscle Mania","","",[["JBB33","Green",""]]],[2025,218,"Mod Mill","Muscle Mania","","",[["HYW47","Metalflake Burnt Orange",""],["JBC15","Green",""]]],[2025,219,"Ford Mustang Dark Horse","Then and Now","","",[["JBB34","White",""]]],[2025,220,"Porsche 911 GT3 RS","Then and Now","","",[["JBB35","Pink",""]]],[2025,221,"'94 Bugatti EB110 SS","HW Race Day","L","STH",[["JBC45","Spectraflame Purple","STH"],["JBB36","Metalflake Purple",""]]],[2025,222,"Ferrari 365 GTB4 Competizione","HW Race Day","","",[["HYW48","Red",""],["JBC19","Yellow",""]]],[2025,223,"Layin' Lowrider","HW Celebration Racers","","",[["JBB37","Purple",""]]],[2025,224,"Honda VFR750R (RC30)","HW Moto","","",[["HYW51","White",""]]],[2025,225,"Pagani Utopia","Peak Pursuit","","",[["JBB38","Blue",""]]],[2025,226,"Mazda 787B","Peak Pursuit","","",[["JBB39","White",""]]],[2025,227,"Volvo 240 Drift Wagon","HW Wagons","","",[["HYY20","ZAMAC",""],["JBB40","Silver",""]]],[2025,228,"Twin Dorado","HW Track Champs","","",[["HYW49","Gold",""]]],[2025,229,"Shark Bite","Experimotors","M","TH",[["JBC31","Metalflake Green","TH"]]],[2025,230,"'73 Pontiac Firebird","Muscle Mania","","",[["JBB41","White",""]]],[2025,231,"'73 Honda Civic Custom","Then and Now","M","STH",[["JBC46","Spectraflame Red","STH"],["JBB42","Red",""]]],[2025,232,"1966 Bat Boat","Batman","","",[["HYW57","Blue",""]]],[2025,233,"Custom '56 Ford Truck","HW Celebration Racers","","",[["JBB43","Black",""]]],[2025,234,"Feline Lucky","HW Celebration Racers","","",[["HYW52","White",""]]],[2025,235,"1966 Triumph Tiger 100","HW Moto","N","TH",[["JBC32","Green","TH"]]],[2025,236,"Limited Grip","Peak Pursuit","","",[["JBB44","Purple",""]]],[2025,237,"McMurtry Spéirling","Peak Pursuit","","",[["HYW55","Gray",""]]],[2025,238,"Jaguar XJC V12 Coupe","Wild Widebody","","",[["HYY21","ZAMAC",""],["HYW54","White",""]]],[2025,239,"Porsche 911 Turbo Cabriolet","Then and Now","","",[["HYW37","Purple",""]]],[2025,240,"'20 Dodge Charger Hellcat","Muscle Mania","N","STH",[["JBC47","Spectraflame Pink","STH"],["JBB45","Metalflake Pink",""]]],[2025,241,"Mo-Stash","HW Celebration Racers","","",[["JBB46","Cream",""]]],[2025,242,"El Segundo Rallye","HW Track Champs","","",[["HYW58","Light Gray",""]]],[2025,243,"Mazda RX-3","Peak Pursuit","","",[["JBB47","Cream",""]]],[2025,244,"Gone Mad","HW Wagons","","",[["HYW56","Slate Blue",""]]],[2025,245,"BMW M3 Wagon","HW Wagons","P","STH",[["JBC48","Spectraflame Green","STH"],["JBB48","Green",""]]],[2025,246,"'84 Audi Sport quattro","Wild Widebody","P","TH",[["JBC33","Silver","TH"]]],[2025,247,"Ford RS200","Peak Pursuit","Q","STH",[["JBC49","Spectraflame Gulf Blue","STH"],["JBB49","Gulf Blue",""]]],[2025,248,"Polestar TRX","Peak Pursuit","","",[["HYW29","Silver",""]]],[2025,249,"Triumph TR6","HW Track Champs","Q","TH",[["JBC34","Flat Gray","TH"]]],[2025,250,"1983 Porsche 928S","Muscle Mania","","",[["HYW53","Red",""]]]];
+// índice toy # -> fila del catálogo y variante de color
+const CODE_INDEX = {}; CATALOG.forEach((r,ri)=> (r[6]||[]).forEach((v,vi)=> CODE_INDEX[v[0]] = {r:ri, v:vi}));
+const KNOWN_CODES = new Set(Object.keys(CODE_INDEX));
+const cat = { year: "2026", fil: "all", series: "", q: "", limit: 80 };
+const normName = s => String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
+function catIndex(){
+  const byNum = new Map(), byName = new Map();
+  state.cars.forEach(c=>{
+    const y = String(c.year||""); const n = parseInt(String(c.colNum||"").split("/")[0],10);
+    if(n) byNum.set(y+"|"+n, c);
+    byName.set(y+"|"+normName(c.name), c);
+  });
+  return r => byNum.get(r[0]+"|"+r[1]) || byName.get(r[0]+"|"+normName(r[2])) || null;
+}
+const pad3 = n => String(n).padStart(3,"0");
+function viewCatalogo(){
+  const find = catIndex();
+  const years = [...new Set(CATALOG.map(r=>String(r[0])))];
+  const inYear = CATALOG.filter(r => cat.year==="all" || String(r[0])===cat.year);
+  const seriesAll = [...new Set(inYear.map(r=>r[3]))].sort((a,b)=>a.localeCompare(b,"es"));
+  const q = cat.q.trim().toLowerCase();
+  const rows = inYear.filter(r=>{
+    if(cat.series && r[3]!==cat.series) return false;
+    const c = find(r); const have = c && c.status!=="wish";
+    if(cat.fil==="miss" && have) return false;
+    if(cat.fil==="have" && !have) return false;
+    if(cat.fil==="th" && r[5]!=="TH") return false;
+    if(cat.fil==="sth" && r[5]!=="STH") return false;
+    if(q && !(r[2]+" "+r[3]+" "+r[1]+" case "+r[4]+" "+(r[6]||[]).map(v=>v[0]).join(" ")).toLowerCase().includes(q)) return false;
+    return true;
+  });
+  const scope = cat.series ? inYear.filter(r=>r[3]===cat.series) : inYear;
+  const got = scope.filter(r=>{ const c=find(r); return c && c.status!=="wish"; }).length;
+  const pct = scope.length ? Math.round(got/scope.length*100) : 0;
+  const scopeName = (cat.series || "Línea principal") + " " + (cat.year==="all" ? years.join(" y ") : cat.year);
+  const fils = [["all","Todos"],["miss","Me faltan"],["have","Los tengo"],["th","TH"],["sth","Super TH"]];
+  const shown = rows.slice(0, cat.limit);
+  const imgQ = r => "https://www.google.com/search?tbm=isch&q=" + encodeURIComponent("Hot Wheels " + r[0] + " " + r[2] + " " + r[3]);
+  return `
+  <div class="label">Línea principal · ${CATALOG.length} modelos</div><h1>Catálogo</h1>
+  <div class="panel" style="margin-top:12px">
+    <div class="row" style="justify-content:space-between"><b>${esc(scopeName)}</b><span style="font-variant-numeric:tabular-nums;font-weight:700">${got} / ${scope.length}</span></div>
+    <div class="prog" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
+    <div class="muted" style="font-size:13px;margin-top:4px">${pct}% completado${got<scope.length?` · te faltan ${scope.length-got}`:" · ¡serie completa!"}</div>
+  </div>
+  <div class="search">
+    <input id="cq" type="search" placeholder="Buscar nombre, serie o toy # (ej. HYW43)…" value="${esc(cat.q)}" aria-label="Buscar en el catálogo">
+    <select id="cseries" aria-label="Serie"><option value="">Todas las series</option>${seriesAll.map(s=>`<option ${cat.series===s?"selected":""}>${esc(s)}</option>`).join("")}</select>
+  </div>
+  <div class="chips" role="group" aria-label="Año">${[["all","Todos los años"],...years.map(y=>[y,y])].map(([v,t])=>`<button class="chip" type="button" data-cyear="${v}" aria-pressed="${cat.year===v}">${t}</button>`).join("")}</div>
+  <div class="chips" style="margin-top:6px" role="group" aria-label="Filtro">${fils.map(([v,t])=>`<button class="chip" type="button" data-cfil="${v}" aria-pressed="${cat.fil===v}">${t}</button>`).join("")}</div>
+  ${rows.length ? `<div class="cat">${shown.map((r,i)=>{
+    const c = find(r); const have = c && c.status!=="wish"; const want = c && c.status==="wish";
+    const idx = CATALOG.indexOf(r);
+    const badges = (r[5]==="STH"?`<span class="tag sth">STH</span> `:r[5]==="TH"?`<span class="tag th">TH</span> `:"");
+    return `<div class="crow ${have?"have":""}"><div class="no">${pad3(r[1])}<small>${r[0]}</small></div>
+      <div class="tx"><b>${badges}${esc(r[2])}</b><span>${esc(r[3])}${r[4]?" · Case "+esc(r[4]):""}</span>${(r[6]||[]).length?`<span class="codes">${r[6].map(v=>esc(v[0])).join(" · ")}</span>`:""}<a href="${imgQ(r)}" target="_blank" rel="noopener">Ver fotos</a></div>
+      <div class="act">${have ? `<button class="have-pill" type="button" data-open="${esc(c.id)}">✓ Tengo${num(c.qty)>1?" ×"+num(c.qty):""}</button>` : want ? `<button class="want-pill" type="button" data-open="${esc(c.id)}">En wishlist</button><button class="btn sm primary" type="button" data-cadd="${idx}">Lo tengo</button>` : `<button class="btn sm primary" type="button" data-cadd="${idx}">Lo tengo</button><button class="btn sm" type="button" data-cwish="${idx}">Lo busco</button>`}</div></div>`;
+  }).join("")}</div>
+  ${rows.length>cat.limit?`<div style="text-align:center;margin-top:12px"><button class="btn" type="button" data-cmore>Mostrar más (${rows.length-cat.limit} restantes)</button></div>`:""}`
+  : `<div class="empty"><h2>Sin resultados</h2><p>Ningún modelo del catálogo coincide.</p></div>`}
+  <p class="muted" style="font-size:12px;margin-top:14px">Datos de la línea principal tomados de listas públicas de coleccionistas; pueden tener errores. Las fotos se abren en internet porque son propiedad de su fabricante.</p>`;
+}
+function carFromCatalog(r, status, variant){
+  let c = null;
+  if(variant) c = state.cars.find(x => String(x.code||"").toUpperCase() === variant[0]) || null;
+  if(!c){ const m = (catIndex())(r); if(m && (!variant || !m.code || String(m.code).toUpperCase()===variant[0])) c = m; }
+  const base = { name:r[2], series:r[3], year:r[0], colNum: pad3(r[1])+"/250", caseLetter:r[4]||"", th:r[5]||"", status };
+  if(variant){ base.code = variant[0]; base.th = variant[2]||""; if(!c || !c.color) base.color = colorEs(variant[1]); }
+  return c ? Object.assign({}, c, base) : base;
+}
+const COLOR_ES = {red:"Rojo",blue:"Azul",black:"Negro",white:"Blanco",green:"Verde",yellow:"Amarillo",orange:"Naranja",gray:"Gris",grey:"Gris",silver:"Plata",purple:"Morado",pink:"Rosado",gold:"Dorado",teal:"Turquesa",turquoise:"Turquesa",brown:"Café",maroon:"Granate",burgundy:"Granate",cream:"Crema",tan:"Arena",sand:"Arena",aqua:"Aguamarina",lime:"Lima",bronze:"Bronce",copper:"Cobre",olive:"Oliva",lavender:"Lavanda",lavendar:"Lavanda",mauve:"Malva",chrome:"Cromado",zamac:"ZAMAC",light:"claro",dark:"oscuro",steel:"acero",army:"militar",military:"militar",baby:"bebé",burnt:"quemado",flat:"mate",matte:"mate",deep:"profundo",pale:"pálido",slate:"pizarra",gunmetal:"grafito",rose:"rosa",champagne:"champán",smoke:"humo",mustard:"mostaza",metallic:"metálico",off:"hueso"};
+function colorEs(en){
+  const w = String(en||"").split(/\s+/).filter(Boolean); if(!w.length) return "";
+  const fin = w.filter(x=>!/^(spectraflame|metalflake)$/i.test(x));
+  const main = fin.map(x=>COLOR_ES[x.toLowerCase()]||x);
+  const finish = w.find(x=>/^(spectraflame|metalflake)$/i.test(x));
+  const mods = main.filter((x,i)=>/^(claro|oscuro|acero|militar|bebé|quemado|mate|profundo|pálido|pizarra|metálico|hueso)$/.test(x));
+  const cols = main.filter(x=>!mods.includes(x));
+  return [cols.join(" "), mods.join(" "), finish||""].filter(Boolean).join(" ");
+}
+
+/* ============ eventos ============ */
+function bindView(){
+  const app = $("#app");
+  const q = $("#q");
+  if(q){ q.oninput = e => { state.q = e.target.value; const pos = e.target.selectionStart; render(); const n=$("#q"); n.focus(); try{n.setSelectionRange(pos,pos);}catch(_){} }; }
+  const so = $("#sort"); if(so) so.onchange = e => { state.sort = e.target.value; render(); };
+  const cq = $("#cq"); if(cq) cq.oninput = e => { cat.q = e.target.value; cat.limit = 80; const pos = e.target.selectionStart; render(); const n=$("#cq"); n.focus(); try{n.setSelectionRange(pos,pos);}catch(_){} };
+  const cs = $("#cseries"); if(cs) cs.onchange = e => { cat.series = e.target.value; cat.limit = 80; render(); };
+  const cur = $("#cur"); if(cur) cur.onchange = e => { state.currency = e.target.value; ls.set("g64.currency", state.currency); toast("Moneda actualizada"); };
+  const imp = $("#importFile"); if(imp) imp.onchange = e => importJson(e.target.files[0]);
+  const nl = $("#newList"); if(nl) nl.onsubmit = async e => { e.preventDefault(); const v=$("#newListName").value.trim(); if(!v) return; if(state.lists.includes(v)) return toast("Esa lista ya existe"); await store.setMeta({lists:[...state.lists, v]}); toast("Lista creada"); };
+  app.onclick = async e => {
+    const t = e.target.closest("button"); if(!t) return;
+    if(t.dataset.open) return openDetail(t.dataset.open);
+    if(t.dataset.cyear){ cat.year = t.dataset.cyear; cat.series = ""; cat.limit = 80; return render(); }
+    if(t.dataset.cfil){ cat.fil = t.dataset.cfil; cat.limit = 80; return render(); }
+    if(t.dataset.cmore!==undefined){ cat.limit += 120; return render(); }
+    if(t.dataset.cadd) return openForm(Object.assign(carFromCatalog(CATALOG[+t.dataset.cadd], "owned"), {qty:1, date:new Date().toISOString().slice(0,10)}), "Agregar a mi garaje");
+    if(t.dataset.cwish){ const r = CATALOG[+t.dataset.cwish]; const base = carFromCatalog(r, "wish"); await store.put(Object.assign({id:uid(), created:Date.now(), qty:1, condition:"blister", quality:"Mint", lists:[], trade:false, photo:"", notes:"", example:false}, base)); toast("Agregado a tu wishlist"); return; }
+    if(t.dataset.filter){ state.filter = t.dataset.filter; return render(); }
+    if(t.dataset.list!==undefined){ state.listFilter = t.dataset.list; return render(); }
+    if(t.dataset.mode){ ls.set("g64.mode2", t.dataset.mode); await setMode(t.dataset.mode); return; }
+    if(t.dataset.showlist){ state.listFilter = state.lists[+t.dataset.showlist]; state.filter="all"; state.q=""; return go("garaje"); }
+    if(t.dataset.showloc){ state.q = t.dataset.showloc; state.listFilter=""; state.filter="all"; return go("garaje"); }
+    if(t.dataset.renlist) return renameList(+t.dataset.renlist);
+    if(t.dataset.dellist) return deleteList(+t.dataset.dellist);
+    const a = t.dataset.act;
+    if(a==="new") return openForm();
+    if(a==="scan") return openScan();
+    if(a==="clearEx"){ for(const c of state.cars.filter(c=>c.example)) await store.del(c.id); return toast("Ejemplos borrados"); }
+    if(a==="exportJson") return exportJson();
+    if(a==="exportCsv") return exportCsv();
+    if(a==="copyTo") return copyLocalTo(t.dataset.target);
+    if(a==="howInstall") return openInstall();
+    if(a==="migrate") return copyLocalTo("cuenta");
+    if(a==="toCuenta") return copyLocalTo("cuenta");
+    if(a==="askWipe"){ $("#wipeBox").innerHTML = `<div class="confirm"><p>Se borrarán ${state.cars.length} autos. No se puede deshacer.</p><button class="btn sm" type="button" data-act="noWipe">Cancelar</button><button class="btn sm danger" type="button" data-act="wipe">Borrar todo</button></div>`; return; }
+    if(a==="noWipe"){ $("#wipeBox").innerHTML=""; return; }
+    if(a==="wipe"){ for(const c of [...state.cars]) await store.del(c.id); toast("Colección borrada"); return; }
+  };
+}
+function renameList(i){
+  const row = document.querySelector(`[data-li="${i}"]`); const old = state.lists[i];
+  row.innerHTML = `<input value="${esc(old)}" maxlength="60" id="ren${i}" aria-label="Nuevo nombre"><button class="btn sm dark" type="button" id="renOk">Guardar</button>`;
+  const inp = $("#ren"+i); inp.focus();
+  $("#renOk").onclick = async () => {
+    const v = inp.value.trim(); if(!v || v===old) return render();
+    const lists = state.lists.map(l=>l===old?v:l);
+    for(const c of state.cars.filter(c=>(c.lists||[]).includes(old))) await store.put(Object.assign({},c,{lists:c.lists.map(l=>l===old?v:l)}));
+    await store.setMeta({lists}); if(state.listFilter===old) state.listFilter=v; toast("Lista renombrada");
+  };
+}
+function deleteList(i){
+  const row = document.querySelector(`[data-li="${i}"]`); const name = state.lists[i];
+  row.innerHTML = `<span class="nm">¿Eliminar "${esc(name)}"? Los autos se quedan en tu garaje.</span><button class="btn sm" type="button" id="dlNo">No</button><button class="btn sm danger" type="button" id="dlYes">Eliminar</button>`;
+  $("#dlNo").onclick = render;
+  $("#dlYes").onclick = async () => {
+    for(const c of state.cars.filter(c=>(c.lists||[]).includes(name))) await store.put(Object.assign({},c,{lists:c.lists.filter(l=>l!==name)}));
+    await store.setMeta({lists: state.lists.filter(l=>l!==name)}); if(state.listFilter===name) state.listFilter=""; toast("Lista eliminada");
+  };
+}
+function go(v){ state.view = v; render(); window.scrollTo(0,0); }
+document.querySelectorAll("nav.bottom button[data-go]").forEach(b=> b.onclick = () => b.dataset.go==="scan" ? openScan() : go(b.dataset.go));
+$("#modeBtn").onclick = () => go("ajustes");
+$("#gearBtn").onclick = () => go("ajustes");
+
+/* ============ hojas modales ============ */
+function sheet(html){
+  const layer = $("#layer");
+  layer.innerHTML = `<div class="scrim" id="scrim"><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div></div>`;
+  $("#scrim").onclick = e => { if(e.target.id==="scrim") closeSheet(); };
+  layer.querySelectorAll("[data-close]").forEach(b=>b.onclick=closeSheet);
+  document.body.style.overflow="hidden";
+  return layer;
+}
+function openInstall(){
+  sheet(`<div class="sheet-h"><h2>Instalar en el iPhone</h2><button class="x" data-close type="button" aria-label="Cerrar">✕</button></div>
+  <ol class="stack" style="margin:0;padding-left:20px;gap:10px">
+    <li>Abre esta página en <b>Safari</b> (no dentro de WhatsApp ni de otra app: toca los tres puntos y elige “Abrir en Safari”).</li>
+    <li>Toca el botón <b>Compartir</b> <span aria-hidden="true">⬆︎</span> en la barra de abajo.</li>
+    <li>Desliza y toca <b>“Agregar a inicio”</b>, luego <b>“Agregar”</b>.</li>
+    <li>Desde ahora abre Garaje 64 <b>solo desde ese ícono</b>. Ahí tus autos quedan guardados aunque pasen días o semanas.</li>
+  </ol>
+  <p class="muted" style="margin:12px 0 0">Si ya registraste autos en la pestaña de Safari, antes de instalar ve a Ajustes → Exportar respaldo, y luego impórtalo dentro de la app instalada: son espacios separados.</p>
+  <div class="form-actions"><button class="btn primary" type="button" data-close>Entendido</button></div>`);
+}
+function closeSheet(){ $("#layer").innerHTML=""; document.body.style.overflow=""; }
+document.addEventListener("keydown", e => { if(e.key==="Escape") closeSheet(); });
+
+function openDetail(id){
+  const c = state.cars.find(x=>x.id===id); if(!c) return;
+  const ph = c.photo ? `<img src="${esc(c.photo)}" alt="Foto de ${esc(c.name)}">` : carSVG(colorOf(c.color));
+  const sp = [
+    ["Serie", c.series], ["Año", c.year], ["Case", c.caseLetter], ["N.º colección", c.colNum],
+    ["Código (toy #)", c.code], ["Código de barras", c.barcode], ["Color", c.color],
+    ["Estado", c.condition==="blister"?"En blíster":"Suelto"], ["Condición", c.quality],
+    ["Cantidad", c.status==="wish"?"—":num(c.qty||1)], ["Pagado", c.price!==""&&c.price!=null&&c.status!=="wish"?money(c.price):""],
+    ["Valor estimado", c.value!==""&&c.value!=null?money(c.value):""], ["Tienda", c.store], ["Fecha", c.date],
+    ["Ubicación", c.location], ["Listas", (c.lists||[]).join(", ")]
+  ].filter(r=>r[1]!==undefined && r[1]!=="" && r[1]!==null);
+  const tag = c.th==="STH"?`<span class="tag sth">Super Treasure Hunt</span>`:c.th==="TH"?`<span class="tag th">Treasure Hunt</span>`:"";
+  const L = sheet(`
+    <div class="sheet-h"><h2>${esc(c.name)}</h2><button class="x" data-close type="button" aria-label="Cerrar">✕</button></div>
+    <div class="hero-ph">${ph}</div>
+    <div class="row" style="margin-top:10px">${tag}${c.status==="wish"?`<span class="tag wish">En wishlist</span>`:""}${c.trade?`<span class="tag">Para intercambio</span>`:""}</div>
+    <dl class="specs">${sp.map(([k,v])=>`<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
+    ${c.notes?`<p style="margin:12px 0 0;white-space:pre-wrap">${esc(c.notes)}</p>`:""}
+    <div class="form-actions">
+      ${c.status==="wish" ? `<button class="btn primary" type="button" id="found">¡Lo encontré!</button>` : `<button class="btn" type="button" id="plus">+1 copia</button><button class="btn" type="button" id="minus" ${num(c.qty||1)<=1?"disabled":""}>−1 copia</button>`}
+      <button class="btn" type="button" id="trade">${c.trade?"Quitar de intercambio":"Marcar para intercambio"}</button>
+      <button class="btn dark" type="button" id="edit">Editar</button>
+    </div>`);
+  const upd = async patch => { await store.put(Object.assign({}, c, patch, {example:false})); };
+  const f = $("#found",L); if(f) f.onclick = async () => { closeSheet(); openForm(Object.assign({}, c, {status:"owned", qty:1, date:new Date().toISOString().slice(0,10)}), "¡Felicidades! Completa los datos de la compra"); };
+  const p = $("#plus",L); if(p) p.onclick = async () => { await upd({qty:num(c.qty||1)+1}); toast("Ahora tienes "+(num(c.qty||1)+1)); openDetail(id); };
+  const m = $("#minus",L); if(m) m.onclick = async () => { await upd({qty:Math.max(1,num(c.qty||1)-1)}); openDetail(id); };
+  $("#trade",L).onclick = async () => { await upd({trade:!c.trade}); toast(c.trade?"Quitado de intercambio":"Marcado para intercambio"); openDetail(id); };
+  $("#edit",L).onclick = () => openForm(c);
+}
+
+function openForm(car, heading, opts={}){
+  const isNew = !car || !state.cars.some(x=>x.id===car.id);
+  const c = Object.assign({id:uid(), created:Date.now(), name:"", series:"", year:new Date().getFullYear(), color:"", code:"", barcode:"", caseLetter:"", colNum:"", th:"", condition:"blister", quality:"Mint", qty:1, price:"", value:"", store:"", date:new Date().toISOString().slice(0,10), location:"", lists:[], status:"owned", trade:false, notes:"", photo:""}, car||{});
+  let photo = c.photo, lists = [...(c.lists||[])];
+  const locs = [...new Set(state.cars.map(x=>x.location).filter(Boolean))];
+  const seriesL = [...new Set(state.cars.map(x=>x.series).filter(Boolean))];
+  const seg = (name, opts, val) => `<div class="seg" role="group" data-seg="${name}">${opts.map(([v,t])=>`<button type="button" data-v="${v}" aria-pressed="${val===v}">${t}</button>`).join("")}</div>`;
+  const L = sheet(`
+    <div class="sheet-h"><h2>${heading ? esc(heading) : isNew ? "Agregar auto" : "Editar auto"}</h2><button class="x" data-close type="button" aria-label="Cerrar">✕</button></div>
+    ${opts.quick ? `<div class="idcard">
+      <div class="row" style="gap:6px">${c.th==="STH"?`<span class="tag sth">Super TH</span>`:c.th==="TH"?`<span class="tag th">TH</span>`:""}<span class="code">${esc(c.code||"")}</span></div>
+      <b class="nm">${esc(c.name)}</b>
+      <span class="muted">${esc([c.year, c.colNum?"#"+c.colNum:"", c.series, c.caseLetter?"Case "+c.caseLetter:"", c.color].filter(Boolean).join(" · "))}</span>
+      ${opts.again?`<button class="linkbtn" type="button" id="notThis">No es este auto</button>`:""}
+    </div>` : ""}
+    <form class="form ${opts.quick?"quick":""}" id="carForm" novalidate>
+      <div class="full adv">${seg("status",[["owned","Lo tengo"],["wish","Lo busco"]],c.status)}</div>
+      <div class="full photo-in"><div class="pv" id="pv">${photo?`<img src="${esc(photo)}" alt="">`:carSVG(colorOf(c.color))}</div>
+        <div class="stack" style="gap:6px"><label class="btn sm filebtn">Tomar foto<input type="file" accept="image/*" capture="environment" id="ph1"></label><label class="btn sm filebtn">Elegir de galería<input type="file" accept="image/*" id="ph2"></label>${photo?`<button class="btn sm danger" type="button" id="phX">Quitar foto</button>`:""}</div></div>
+      <div class="f full adv"><label class="label" for="fname">Nombre del modelo *</label><input id="fname" required value="${esc(c.name)}" placeholder="Ej. '67 Camaro"></div>
+      <div class="f adv"><label class="label" for="fseries">Serie</label><input id="fseries" list="seriesList" value="${esc(c.series)}" placeholder="Ej. HW Dream Garage"><datalist id="seriesList">${seriesL.map(s=>`<option value="${esc(s)}">`).join("")}</datalist></div>
+      <div class="f adv"><label class="label" for="fyear">Año</label><input id="fyear" type="number" inputmode="numeric" min="1968" max="2100" value="${esc(c.year)}"></div>
+      <div class="f adv"><label class="label" for="fcase">Case (letra)</label><select id="fcase"><option value="">—</option>${CASES.map(l=>`<option ${c.caseLetter===l?"selected":""}>${l}</option>`).join("")}</select></div>
+      <div class="f adv"><label class="label" for="fcol">N.º colección</label><input id="fcol" value="${esc(c.colNum)}" placeholder="Ej. 112/250"></div>
+      <div class="f adv"><label class="label" for="fcode">Código (toy #)</label><input id="fcode" value="${esc(c.code)}" placeholder="Ej. JBC42" autocapitalize="characters"></div>
+      <div class="f adv"><label class="label" for="fbar">Código de barras</label><input id="fbar" inputmode="numeric" value="${esc(c.barcode)}" placeholder="UPC del blíster"></div>
+      <div class="f adv"><label class="label" for="fcolor">Color</label><input id="fcolor" value="${esc(c.color)}" placeholder="Ej. Rojo"></div>
+      <div class="f adv"><label class="label" for="fth">Treasure Hunt</label><select id="fth"><option value="">Normal</option><option value="TH" ${c.th==="TH"?"selected":""}>Treasure Hunt</option><option value="STH" ${c.th==="STH"?"selected":""}>Super Treasure Hunt</option></select></div>
+      <div class="full owned-only adv">${seg("condition",[["blister","En blíster"],["suelto","Suelto"]],c.condition)}</div>
+      <div class="f owned-only adv"><label class="label" for="fqual">Condición</label><select id="fqual">${CONDS.map(q=>`<option ${c.quality===q?"selected":""}>${q}</option>`).join("")}</select></div>
+      <div class="f owned-only adv"><label class="label" for="fqty">Cantidad</label><input id="fqty" type="number" min="1" inputmode="numeric" value="${esc(c.qty)}"></div>
+      <div class="f owned-only"><label class="label" for="fprice">Pagado (${esc(state.currency)})</label><input id="fprice" type="number" step="0.01" min="0" inputmode="decimal" value="${esc(c.price)}"></div>
+      <div class="f adv"><label class="label" for="fvalue">Valor estimado (${esc(state.currency)})</label><input id="fvalue" type="number" step="0.01" min="0" inputmode="decimal" value="${esc(c.value)}"></div>
+      <div class="f owned-only adv"><label class="label" for="fstore">Tienda</label><input id="fstore" value="${esc(c.store)}"></div>
+      <div class="f owned-only adv"><label class="label" for="fdate">Fecha de compra</label><input id="fdate" type="date" value="${esc(c.date)}"></div>
+      <div class="f full owned-only adv"><label class="label" for="floc">Ubicación física</label><input id="floc" list="locList" value="${esc(c.location)}" placeholder="Ej. Vitrina 1, Caja B"><datalist id="locList">${locs.map(s=>`<option value="${esc(s)}">`).join("")}</datalist></div>
+      <div class="f full adv"><span class="label">Listas</span><div class="listpick" id="listpick"></div>
+        <div class="row" style="margin-top:6px"><input id="newL" placeholder="Nueva lista" style="flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:8px" maxlength="60" aria-label="Nueva lista"><button class="btn sm" type="button" id="addL">Añadir</button></div></div>
+      <label class="check full owned-only adv"><input type="checkbox" id="ftrade" ${c.trade?"checked":""}> Disponible para intercambio</label>
+      <div class="f full adv"><label class="label" for="fnotes">Notas</label><textarea id="fnotes" placeholder="Variante, defectos, a quién se lo cambié…">${esc(c.notes)}</textarea></div>
+      ${opts.quick?`<button class="btn full" type="button" id="moreData">Más datos (estado, valor, tienda, ubicación, listas…)</button>`:""}
+    </form>
+    <p id="ferr" class="muted" style="color:var(--bad);margin:8px 0 0" hidden></p>
+    <div class="form-actions">${!isNew?`<button class="btn danger" type="button" id="del">Eliminar</button>`:""}<button class="btn primary" type="button" id="save">${isNew?"Guardar en mi garaje":"Guardar cambios"}</button></div>
+    <div id="delBox"></div>`);
+  const segVal = {status:c.status, condition:c.condition};
+  const md = $("#moreData",L); if(md) md.onclick = () => { $("#carForm",L).classList.remove("quick"); md.remove(); };
+  const nt = $("#notThis",L); if(nt) nt.onclick = () => { closeSheet(); openScan(); };
+  if(opts.quick) setTimeout(()=>{ const pr=$("#fprice",L); if(pr && photo) pr.focus(); }, 300);
+  const syncWish = () => L.querySelectorAll(".owned-only").forEach(el=>el.hidden = segVal.status==="wish");
+  L.querySelectorAll("[data-seg]").forEach(g=> g.onclick = e => { const b=e.target.closest("button"); if(!b) return; segVal[g.dataset.seg]=b.dataset.v; g.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed", x===b)); syncWish(); });
+  syncWish();
+  const allLists = () => [...new Set([...state.lists, ...lists])];
+  const drawLists = () => { $("#listpick",L).innerHTML = allLists().length ? allLists().map(l=>`<button type="button" class="chip" aria-pressed="${lists.includes(l)}" data-l="${esc(l)}">${esc(l)}</button>`).join("") : `<span class="muted">Sin listas aún.</span>`; };
+  drawLists();
+  $("#listpick",L).onclick = e => { const b=e.target.closest("[data-l]"); if(!b) return; const l=b.dataset.l; lists = lists.includes(l)? lists.filter(x=>x!==l) : [...lists,l]; drawLists(); };
+  $("#addL",L).onclick = () => { const v=$("#newL",L).value.trim(); if(v && !lists.includes(v)) lists.push(v); $("#newL",L).value=""; drawLists(); };
+  const onPhoto = async f => { if(!f) return; try{ photo = await compress(f); $("#pv",L).innerHTML = `<img src="${photo}" alt="">`; }catch(e){ toast("No se pudo leer la imagen. Prueba con otra."); } };
+  $("#ph1",L).onchange = e => onPhoto(e.target.files[0]);
+  $("#ph2",L).onchange = e => onPhoto(e.target.files[0]);
+  const phX = $("#phX",L); if(phX) phX.onclick = () => { photo=""; $("#pv",L).innerHTML = carSVG(colorOf($("#fcolor",L).value)); phX.remove(); };
+  $("#save",L).onclick = async () => {
+    const v = id => $("#"+id,L).value.trim();
+    if(!v("fname")){ const e=$("#ferr",L); e.textContent="Escribe el nombre del modelo para guardar."; e.hidden=false; $("#fname",L).focus(); return; }
+    const out = Object.assign({}, c, {
+      name:v("fname"), series:v("fseries"), year:v("fyear"), caseLetter:v("fcase"), colNum:v("fcol"), code:v("fcode").toUpperCase(), barcode:v("fbar"),
+      color:v("fcolor"), th:v("fth"), condition:segVal.condition, quality:v("fqual"), qty:Math.max(1,parseInt(v("fqty"))||1), price:v("fprice"), value:v("fvalue"),
+      store:v("fstore"), date:v("fdate"), location:v("floc"), lists, status:segVal.status, trade:$("#ftrade",L).checked, notes:$("#fnotes",L).value, photo, example:false
+    });
+    const newLists = lists.filter(l=>!state.lists.includes(l));
+    $("#save",L).disabled = true;
+    try{
+      if(newLists.length) await store.setMeta({lists:[...state.lists, ...newLists]});
+      await store.put(out);
+      closeSheet(); toast(isNew ? (out.status==="wish"?"Agregado a tu wishlist":"¡Agregado a tu garaje!") : "Cambios guardados");
+    }catch(e){ $("#save",L).disabled=false; const er=$("#ferr",L); er.textContent = "No se pudo guardar: " + (e.message||e.code||"error") + ". Si la foto es muy grande, prueba con otra."; er.hidden=false; }
+  };
+  const del = $("#del",L);
+  if(del) del.onclick = () => { $("#delBox",L).innerHTML = `<div class="confirm"><p>¿Eliminar "${esc(c.name)}" de tu colección?</p><button class="btn sm" type="button" id="dNo">Cancelar</button><button class="btn sm danger" type="button" id="dYes">Eliminar</button></div>`; $("#dNo",L).onclick=()=>$("#delBox",L).innerHTML=""; $("#dYes",L).onclick=async()=>{ await store.del(c.id); closeSheet(); toast("Auto eliminado"); }; };
+}
+
+/* ============ fotos ============ */
+function compress(file, max=560, q=.72){
+  return new Promise((res,rej)=>{
+    const url = URL.createObjectURL(file); const img = new Image();
+    img.onload = () => { const s = Math.min(1, max/Math.max(img.width,img.height)); const cv=document.createElement("canvas"); cv.width=Math.round(img.width*s); cv.height=Math.round(img.height*s); cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height); URL.revokeObjectURL(url); res(cv.toDataURL("image/jpeg",q)); };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("imagen")); };
+    img.src = url;
+  });
+}
+
+/* ============ escáner de código de barras ============ */
+let zxingP = null;
+function loadZXing(){
+  if(window.ZXing) return Promise.resolve(window.ZXing);
+  if(!zxingP) zxingP = new Promise((res,rej)=>{ const s=document.createElement("script"); s.src="https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js"; s.onload=()=>res(window.ZXing); s.onerror=()=>{ zxingP=null; rej(new Error("zxing")); }; document.head.appendChild(s); });
+  return zxingP;
+}
+async function decodeBarcode(file){
+  if("BarcodeDetector" in window){
+    try{ const det = new BarcodeDetector({formats:["upc_a","upc_e","ean_13","ean_8","code_128","qr_code"]}); const bmp = await createImageBitmap(file); const r = await det.detect(bmp); if(r && r[0]) return r[0].rawValue; }catch(e){}
+  }
+  const ZX = await loadZXing();
+  const url = URL.createObjectURL(file);
+  try{
+    const hints = new Map(); hints.set(ZX.DecodeHintType.TRY_HARDER, true);
+    const reader = new ZX.BrowserMultiFormatReader(hints);
+    const r = await reader.decodeFromImageUrl(url); return r.getText();
+  }finally{ URL.revokeObjectURL(url); }
+}
+/* ============ lectura del toy # (OCR en el teléfono) ============ */
+// Lectura del toy # en una foto del blíster: detección de renglones + relectura por franja
+const G64OCR = (() => {
+  const WL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-";
+  let workerP = null;
+  function getWorker(base){
+    if(!workerP){
+      workerP = Tesseract.createWorker("eng", 1, {workerPath:base+"worker-wrap.js", corePath:base, langPath:base, gzip:true, workerBlobURL:false, cacheMethod:"none"});
+      workerP.catch(()=>{ workerP = null; });
+    }
+    return workerP;
+  }
+  function toCanvas(img, maxSide, raw){
+    const w0 = img.naturalWidth||img.width, h0 = img.naturalHeight||img.height;
+    const s = Math.min(1, maxSide/Math.max(w0,h0));
+    const W = Math.round(w0*s), H = Math.round(h0*s);
+    const c = document.createElement("canvas"); c.width = W; c.height = H;
+    const x = c.getContext("2d", {willReadFrequently:true}); x.drawImage(img,0,0,W,H);
+    if(raw){ const d = x.getImageData(0,0,W,H), a = d.data; for(let i=0;i<a.length;i+=4){ const g=.299*a[i]+.587*a[i+1]+.114*a[i+2]; a[i]=a[i+1]=a[i+2]=g; } x.putImageData(d,0,0); return c; }
+    // fondo difuminado para quitar sombras y brillos (normaliza la iluminación)
+    const sw = Math.max(8, Math.round(W/24)), sh = Math.max(8, Math.round(H/24));
+    const sm = document.createElement("canvas"); sm.width = sw; sm.height = sh;
+    const sx = sm.getContext("2d"); sx.imageSmoothingEnabled = true; sx.drawImage(c,0,0,sw,sh);
+    const bg = document.createElement("canvas"); bg.width = W; bg.height = H;
+    const bx = bg.getContext("2d", {willReadFrequently:true}); bx.imageSmoothingEnabled = true; bx.imageSmoothingQuality = "high"; bx.drawImage(sm,0,0,W,H);
+    const d = x.getImageData(0,0,W,H), a = d.data, b = bx.getImageData(0,0,W,H).data;
+    for(let i=0;i<a.length;i+=4){
+      const g = .299*a[i]+.587*a[i+1]+.114*a[i+2];
+      const k = .299*b[i]+.587*b[i+1]+.114*b[i+2] + 1;
+      let v = Math.min(255, g/k*235);
+      v = v < 150 ? Math.max(0, (v-60)*1.6) : 255;
+      a[i]=a[i+1]=a[i+2]=v;
+    }
+    x.putImageData(d,0,0); return c;
+  }
+  function crop(src, x0,y0,x1,y1, targetH){
+    x0=Math.max(0,Math.floor(x0)); y0=Math.max(0,Math.floor(y0)); x1=Math.min(src.width,Math.ceil(x1)); y1=Math.min(src.height,Math.ceil(y1));
+    const s = targetH ? Math.min(3, Math.max(1, targetH/(y1-y0))) : 1;
+    const c = document.createElement("canvas"); c.width = Math.max(1,Math.round((x1-x0)*s)); c.height = Math.max(1,Math.round((y1-y0)*s));
+    c.getContext("2d").drawImage(src, x0,y0,x1-x0,y1-y0, 0,0,c.width,c.height); return c;
+  }
+  function words(data){ const out=[]; (data.blocks||[]).forEach(b=>b.paragraphs.forEach(p=>p.lines.forEach(l=>{ out.push({line:true,bbox:l.bbox,text:l.text}); l.words.forEach(w=>out.push({bbox:w.bbox,text:w.text})); }))); return out; }
+  async function readText(img, opts={}){
+    const w = await getWorker(opts.base);
+    const can = toCanvas(img, 1800);
+    const rawc = toCanvas(img, 1800, true);
+    const texts = [];
+    await w.setParameters({tessedit_pageseg_mode:"11", tessedit_char_whitelist:""});
+    const r = await w.recognize(can, {}, {blocks:true, text:true});
+    texts.push(r.data.text);
+    if(opts.stop && opts.stop(texts.join("\n"))) return texts.join("\n");
+    // franjas horizontales alrededor de cada palabra detectada
+    const H = can.height; let bands = [];
+    words(r.data).forEach(o => { const h = o.bbox.y1-o.bbox.y0; if(h > H*0.012 && h < H*0.09) bands.push([o.bbox.y0-h*0.45, o.bbox.y1+h*0.45, o.bbox.x0, o.bbox.x1, h]); });
+    bands.sort((a,b)=>a[0]-b[0]);
+    const merged = [];
+    for(const b of bands){ const m = merged[merged.length-1]; if(m && b[0] < m[1]-(m[1]-m[0])*0.4 && Math.abs(b[4]-m[4]) < m[4]*0.6){ m[1]=Math.max(m[1],b[1]); m[2]=Math.min(m[2],b[2]); m[3]=Math.max(m[3],b[3]); } else merged.push(b.slice()); }
+    await w.setParameters({tessedit_pageseg_mode:"7", tessedit_char_whitelist:WL});
+    for(const b of merged.slice(0,30)){
+      const h = b[1]-b[0];
+      const rr = await w.recognize(crop(rawc, 0, b[0], can.width, b[1], 64));
+      texts.push(rr.data.text);
+      if(opts.stop && opts.stop(texts.join("\n"))) break;
+    }
+    return texts.join("\n");
+  }
+  // relectura alrededor de un punto que el usuario toca en la foto (coordenadas 0..1)
+  async function readAt(img, fx, fy, opts={}){
+    const w = await getWorker(opts.base);
+    const raw = toCanvas(img, 2000, true);
+    const H = raw.height, W = raw.width, out = [];
+    await w.setParameters({tessedit_pageseg_mode:"7", tessedit_char_whitelist:WL});
+    for(const [hh, ww, dy] of [[0.07,0.5,0],[0.1,0.7,0],[0.05,0.4,0],[0.07,0.6,-0.03],[0.07,0.6,0.03]]){
+      const cy = fy + dy;
+      const r = await w.recognize(crop(raw, fx*W-ww*W/2, cy*H-hh*H/2, fx*W+ww*W/2, cy*H+hh*H/2, 72));
+      out.push(r.data.text); if(opts.stop && opts.stop(out.join("\n"))) break;
+    }
+    return out.join("\n");
+  }
+  const L2 = {"0":"O","1":"I","2":"Z","4":"A","5":"S","6":"G","8":"B","7":"T"};
+  const D2 = {"O":"0","Q":"0","D":"0","U":"0","I":"1","L":"1","T":"7","Z":"2","S":"5","B":"8","G":"6","A":"4"};
+  const CONF = new Set(["O0","Q0","D0","U0","I1","L1","Z2","S5","B8","G6","A4","T7","VW","VY","UV","MN","HN","CG","EF","PR","KX","OQ","OD","HM","WN","IJ","AH","HA"].flatMap(p=>[p,p[1]+p[0]]));
+  const subCost = (x,y) => x===y ? 0 : (CONF.has(x+y) ? 0.3 : 1);
+  function dist(s, t){ // Levenshtein con costo menor para letras que la cámara confunde
+    const m=s.length, n=t.length; let prev=new Array(n+1).fill(0).map((_,j)=>j), cur=new Array(n+1);
+    for(let i=1;i<=m;i++){ cur[0]=i; for(let j=1;j<=n;j++) cur[j]=Math.min(prev[j]+1, cur[j-1]+1, prev[j-1]+subCost(s[i-1],t[j-1])); [prev,cur]=[cur,prev]; }
+    return prev[n];
+  }
+  function findCodes(text, known){
+    const cand = new Map();
+    const add = (code, score) => { if(!cand.has(code) || cand.get(code) < score) cand.set(code, score); };
+    const lines = String(text||"").toUpperCase().replace(/[‐-―−~_]/g,"-").split(/\n+/);
+    for(const line of lines){
+      const c = line.replace(/[^A-Z0-9\-]/g,"");
+      // 1) coincidencia exacta (corrigiendo letras/dígitos por posición)
+      for(let i=0;i+5<=c.length;i++){
+        const w = c.slice(i,i+5); if(w.includes("-")) continue;
+        const f = w.slice(0,3).split("").map(ch=>L2[ch]||ch).join("") + w.slice(3).split("").map(ch=>D2[ch]||ch).join("");
+        if(known.has(f)) add(f, 20 + (c[i+5]==="-"?3:0) + (w===f?1:0));
+      }
+      // 2) lo que va justo antes del guion (formato HYW43-N7C5), con tolerancia
+      for(let i=c.indexOf("-"); i>=4; i=c.indexOf("-", i+1)){
+        if(!/^[A-Z0-9]{3}/.test(c.slice(i+1))) continue;
+        const scored = [];
+        for(let len=4; len<=6 && len<=i; len++){
+          const sub = c.slice(i-len, i);
+          for(const k of known){ const d = dist(sub, k) + (len===5?0:0.15); if(d <= 1.3) scored.push({k, d}); }
+        }
+        const byK = new Map(); scored.forEach(o => { if(!byK.has(o.k) || byK.get(o.k) > o.d) byK.set(o.k, o.d); });
+        const list = [...byK.entries()].map(([k,d])=>({k,d})).sort((a,b)=>a.d-b.d);
+        if(!list.length) continue;
+        const best = list[0], second = list[1];
+        if(!second || second.d - best.d >= 0.4) add(best.k, best.d <= 0.65 ? 19 : 12 - best.d);
+        else list.filter(o => o.d <= best.d + 0.4).slice(0,3).forEach(o => add(o.k, 11 - o.d));
+      }
+    }
+    return [...cand.entries()].sort((a,b)=>b[1]-a[1]).map(([code,score])=>({code, sure: score>=19}));
+  }
+  return { readText, readAt, findCodes, preload: base => getWorker(base) };
+})();
+
+let tessP = null;
+function loadTesseract(){
+  if(window.Tesseract) return Promise.resolve();
+  if(!tessP) tessP = new Promise((res,rej)=>{ const s=document.createElement("script"); s.src="ocr/tesseract.min.js"; s.onload=res; s.onerror=()=>{ tessP=null; rej(new Error("ocr")); }; document.head.appendChild(s); });
+  return tessP;
+}
+const ocrBase = () => new URL("ocr/", document.baseURI).href;
+function warmOCR(){ loadTesseract().then(()=>G64OCR.preload(ocrBase())).catch(()=>{}); }
+// nombres del catálogo que aparecen en el texto leído (el nombre va impreso en grande atrás del blíster)
+function namesInText(text){
+  const t = normName(text);
+  const hits = [];
+  CATALOG.forEach((r,ri)=>{ const n = normName(r[2]).replace(/^\d{2}/,""); if(n.length>=6 && t.includes(n)) hits.push(ri); });
+  return hits;
+}
+function variantLabel(r, v){ return `${r[0]} · #${pad3(r[1])} · ${esc(colorEs(v[1]))}`; }
+
+function openScan(){
+  warmOCR();
+  const L = sheet(`
+    <div class="sheet-h"><h2>Escanear blíster</h2><button class="x" data-close type="button" aria-label="Cerrar">✕</button></div>
+    <div class="scanbox" id="scanBox">
+      <label class="scanbig filebtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7V5a1 1 0 011-1h2M17 4h2a1 1 0 011 1v2M20 17v2a1 1 0 01-1 1h-2M7 20H5a1 1 0 01-1-1v-2M7 9v6M10 9v6M13 9v6M16 9v6"/></svg>Tomar foto del código<span class="muted" style="font-weight:500;font-size:13px">Enfoca el código junto al gancho del blíster, por ejemplo <span class="code">HYW43-N7C5</span>. El código de barras también sirve.</span><input type="file" accept="image/*" capture="environment" id="sc1"></label>
+      <label class="btn filebtn">Usar una foto de la galería<input type="file" accept="image/*" id="sc2"></label>
+      <div class="row"><input id="manual" autocapitalize="characters" autocomplete="off" placeholder="O escribe el código: HYW43 o el de barras" style="flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px" aria-label="Código manual"><button class="btn dark" type="button" id="mGo">Buscar</button></div>
+      <div id="scanOut"></div>
+    </div>`);
+  const out = $("#scanOut",L);
+  let pendingBarcode = "";
+  const status = (msg, img) => { out.innerHTML = `<div class="result thumbrow">${img?`<img src="${img}" alt="">`:""}<div class="row" style="flex:1"><span class="spin" aria-hidden="true"></span><span>${msg}</span></div></div>`; };
+  const fail = (msg) => `<div class="result"><b>${msg}</b><p class="muted" style="margin:4px 0 0">Escribe el código del blíster en la casilla de arriba (las 5 primeras letras y números, por ejemplo HYW43).</p></div>`;
+
+  // resultado final para un toy # del catálogo
+  function resolveCode(code){
+    const ix = CODE_INDEX[code]; if(!ix) return showMatch(code);
+    const r = CATALOG[ix.r], v = r[6][ix.v];
+    const base = carFromCatalog(r, "owned", v);
+    if(pendingBarcode && !base.barcode) base.barcode = pendingBarcode;
+    const existing = base.id ? state.cars.find(x=>x.id===base.id) : null;
+    if(existing && existing.status!=="wish"){
+      out.innerHTML = `<div class="result"><div class="label">Código ${esc(code)}</div><p style="margin:6px 0"><b>Ya lo tienes:</b> ${esc(existing.name)} ${esc(existing.color?"("+existing.color+")":"")} ×${num(existing.qty||1)}</p><div class="row"><button class="btn" type="button" data-open2="${esc(existing.id)}">Ver ficha</button><button class="btn primary" type="button" data-plus="${esc(existing.id)}">Sumar una copia</button></div></div>`;
+      out.onclick = async e => { const b=e.target.closest("button"); if(!b) return;
+        if(b.dataset.open2) openDetail(b.dataset.open2);
+        if(b.dataset.plus){ const c = state.cars.find(x=>x.id===b.dataset.plus); await store.put(Object.assign({},c,{qty:num(c.qty||1)+1}, (!c.code?{code}:{}), (pendingBarcode&&!c.barcode?{barcode:pendingBarcode}:{}))); closeSheet(); toast("Ahora tienes "+(num(c.qty||1)+1)+" de "+c.name); } };
+      return;
+    }
+    const today = new Date().toISOString().slice(0,10);
+    const car = Object.assign(base, {status:"owned"}, existing ? {qty:1, date:today} : {qty:1, date:today, condition:"blister", quality:"Mint"});
+    if(existing) toast("¡Estaba en tu wishlist!");
+    openForm(car, existing ? "¡Lo encontraste!" : "Agregar a mi garaje", {quick:true, again:true});
+  }
+
+  // varias posibilidades: el usuario elige
+  function showChoices(list, title){
+    out.innerHTML = `<div class="result"><b>${title}</b><div class="stack" style="gap:6px;margin-top:8px">${list.map(([code])=>{ const ix=CODE_INDEX[code], r=CATALOG[ix.r], v=r[6][ix.v];
+      return `<button class="btn choice" type="button" data-code="${esc(code)}"><span><b>${esc(r[2])}</b><br><span class="muted" style="font-size:13px">${variantLabel(r,v)} · <span class="code">${esc(code)}</span></span></span>${v[2]?`<span class="tag ${v[2]==="STH"?"sth":"th"}">${v[2]}</span>`:""}</button>`; }).join("")}
+      <button class="btn" type="button" data-none>Ninguno de estos</button></div></div>`;
+    out.onclick = e => { const b=e.target.closest("button"); if(!b) return; if(b.dataset.code) resolveCode(b.dataset.code); if(b.dataset.none!==undefined) out.innerHTML = fail("Escribe el código a mano."); };
+  }
+
+  function decide(text){
+    const codes = G64OCR.findCodes(text, KNOWN_CODES);
+    if(codes.length && codes[0].sure){ resolveCode(codes[0].code); return true; }
+    const names = namesInText(text);
+    let opts = codes.map(c=>c.code);
+    if(names.length){ // prioriza los que coinciden con el nombre impreso
+      const byName = opts.filter(c=>names.includes(CODE_INDEX[c].r));
+      if(byName.length===1){ resolveCode(byName[0]); return true; }
+      if(!opts.length) names.forEach(ri=> (CATALOG[ri][6]||[]).forEach(v=>opts.push(v[0])));
+      else if(byName.length) opts = byName;
+    }
+    opts = [...new Set(opts)].slice(0,8);
+    if(opts.length===1 && names.length){ resolveCode(opts[0]); return true; }
+    if(opts.length){ showChoices(opts.map(c=>[c]), names.length && !codes.length ? "Leí el nombre del auto. ¿Cuál es el tuyo?" : "No se leyó del todo claro. ¿Cuál es?"); return true; }
+    return false;
+  }
+
+  function tapMode(url, img){
+    out.innerHTML = `<div class="result"><b>No encontré el código automáticamente.</b><p style="margin:4px 0 8px">Toca el código en la foto (por ejemplo <span class="code">HYW43-N7C5</span>).</p><div class="tapwrap" id="tapw"><img src="${url}" alt="Foto del blíster" id="tapimg"></div><p class="muted" id="tapmsg" style="margin:8px 0 0"></p></div>`;
+    const im = $("#tapimg", out), w = $("#tapw", out);
+    im.onclick = async e => {
+      const rc = im.getBoundingClientRect();
+      // la imagen usa object-fit: contain; calcula el área real dibujada
+      const iw = img.naturalWidth, ih = img.naturalHeight, s = Math.min(rc.width/iw, rc.height/ih);
+      const dw = iw*s, dh = ih*s, ox = (rc.width-dw)/2, oy = (rc.height-dh)/2;
+      const fx = (e.clientX-rc.left-ox)/dw, fy = (e.clientY-rc.top-oy)/dh;
+      if(fx<0||fx>1||fy<0||fy>1) return;
+      w.querySelectorAll(".tapdot").forEach(d=>d.remove());
+      const dot = document.createElement("span"); dot.className="tapdot"; dot.style.left=(e.clientX-rc.left)+"px"; dot.style.top=(e.clientY-rc.top)+"px"; w.appendChild(dot);
+      $("#tapmsg", out).innerHTML = `<span class="row"><span class="spin"></span>Leyendo esa parte…</span>`;
+      try{
+        const t = await G64OCR.readAt(img, fx, fy, {base: ocrBase(), stop: s => G64OCR.findCodes(s, KNOWN_CODES).some(c=>c.sure)});
+        if(!decide(t)) $("#tapmsg", out).textContent = "Tampoco pude leerlo ahí. Prueba tocando justo encima de las letras, o escríbelo arriba.";
+      }catch(err){ $("#tapmsg", out).textContent = "La lectura automática no está disponible en este navegador. Escribe el código arriba."; }
+    };
+  }
+
+  const handle = async f => {
+    if(!f) return;
+    pendingBarcode = "";
+    const url = URL.createObjectURL(f);
+    const img = new Image(); img.src = url;
+    try{ await img.decode(); }catch(e){ out.innerHTML = fail("No se pudo abrir la foto."); return; }
+    status("Buscando el código…", url);
+    // 1) código de barras (si la foto lo muestra)
+    try{
+      const bc = await Promise.race([decodeBarcode(f), new Promise((_,rej)=>setTimeout(()=>rej(new Error("t")), 4000))]);
+      if(bc){
+        const d = String(bc).replace(/\D/g,"");
+        const linked = state.cars.some(c => c.barcode && c.barcode.replace(/\D/g,"")===d);
+        if(linked || !d) return showMatch(bc);
+        pendingBarcode = bc;
+      }
+    }catch(e){}
+    // 2) toy # impreso en el blíster
+    status("Leyendo el código del blíster… la primera vez puede tardar unos segundos.", url);
+    try{
+      await loadTesseract();
+      const text = await G64OCR.readText(img, {base: ocrBase(), stop: s => G64OCR.findCodes(s, KNOWN_CODES).some(c=>c.sure)});
+      if(!decide(text)){
+        if(pendingBarcode) return showMatch(pendingBarcode);
+        tapMode(url, img);
+      }
+    }catch(e){
+      if(pendingBarcode) return showMatch(pendingBarcode);
+      out.innerHTML = fail("La lectura automática no está disponible en este navegador.");
+    }
+  };
+  $("#sc1",L).onchange = e => handle(e.target.files[0]);
+  $("#sc2",L).onchange = e => handle(e.target.files[0]);
+  const mgo = () => {
+    const v = $("#manual",L).value.trim().toUpperCase(); if(!v) return;
+    const m = v.replace(/\s/g,"").match(/^([A-Z]{3}\d{2})/);
+    if(m && CODE_INDEX[m[1]]) return resolveCode(m[1]);
+    showMatch(v);
+  };
+  $("#mGo",L).onclick = mgo; $("#manual",L).onkeydown = e => { if(e.key==="Enter") mgo(); };
+  function showMatch(code){
+    const k = code.trim().toUpperCase();
+    const hits = state.cars.filter(c => (c.barcode && c.barcode.replace(/\D/g,"")===k.replace(/\D/g,"") && k.replace(/\D/g,"").length>5) || (c.code && c.code.toUpperCase()===k));
+    const own = hits.filter(c=>c.status!=="wish"), wl = hits.filter(c=>c.status==="wish");
+    const isUPC = /^\d{6,14}$/.test(k);
+    let html = `<div class="result"><div class="label">Código leído</div><div class="code" style="font-size:20px">${esc(code)}</div>`;
+    if(wl.length) html += `<p style="margin:8px 0 4px"><b>¡Está en tu wishlist!</b> ${esc(wl[0].name)}</p><button class="btn primary block" type="button" data-found="${esc(wl[0].id)}">¡Lo encontré! Pasar a mi garaje</button>`;
+    else if(own.length) html += `<p style="margin:8px 0 4px"><b>Ya lo tienes:</b> ${esc(own[0].name)} (×${num(own[0].qty||1)})</p><div class="row"><button class="btn" type="button" data-open2="${esc(own[0].id)}">Ver ficha</button><button class="btn primary" type="button" data-plus="${esc(own[0].id)}">Sumar una copia</button></div>`;
+    else html += `<p style="margin:8px 0 8px">Código nuevo. Búscalo en el catálogo y quedará vinculado a este código para la próxima vez.</p>
+      <input id="scCat" type="search" placeholder="Nombre del auto (ej. Supra, Civic, Bronco)" style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:10px" aria-label="Buscar en el catálogo">
+      <div id="scHits" class="stack" style="gap:6px;margin-top:8px"></div>
+      <div class="row" style="margin-top:8px"><button class="btn" type="button" data-add="own">No está: agregar a mano</button><button class="btn" type="button" data-add="wish">Agregar a wishlist</button></div>`;
+    out.innerHTML = html + `</div>`;
+    const sc = $("#scCat", out);
+    if(sc){
+      const draw = () => {
+        const q = sc.value.trim().toLowerCase();
+        const hits = q.length < 2 ? [] : CATALOG.map((r,i)=>[r,i]).filter(([r])=>(r[2]+" "+r[3]).toLowerCase().includes(q)).slice(0,8);
+        $("#scHits", out).innerHTML = hits.map(([r,i])=>`<button class="btn" style="justify-content:space-between;text-align:left" type="button" data-pick="${i}"><span><b>${esc(r[2])}</b><br><span class="muted" style="font-size:13px">${r[0]} · #${pad3(r[1])} · ${esc(r[3])}${r[4]?" · Case "+esc(r[4]):""}</span></span>${r[5]?`<span class="tag ${r[5]==="STH"?"sth":"th"}">${r[5]}</span>`:""}</button>`).join("") || (q.length>=2 ? `<p class="muted" style="margin:0">No está en el catálogo 2025–2026. Agrégalo a mano.</p>` : "");
+      };
+      sc.oninput = draw; sc.focus();
+    }
+    out.onclick = async e => {
+      const b = e.target.closest("button"); if(!b) return;
+      if(b.dataset.found){ const c = state.cars.find(x=>x.id===b.dataset.found); openForm(Object.assign({},c,{status:"owned",qty:1,date:new Date().toISOString().slice(0,10)}),"¡Felicidades! Completa los datos de la compra"); }
+      if(b.dataset.open2) openDetail(b.dataset.open2);
+      if(b.dataset.plus){ const c = state.cars.find(x=>x.id===b.dataset.plus); await store.put(Object.assign({},c,{qty:num(c.qty||1)+1})); closeSheet(); toast("Ahora tienes "+(num(c.qty||1)+1)+" de "+c.name); }
+      if(b.dataset.pick){ const base = carFromCatalog(CATALOG[+b.dataset.pick], "owned"); const patch = isUPC?{barcode:k}:{code:k}; return openForm(Object.assign(base, patch, base.id?{}:{qty:1, date:new Date().toISOString().slice(0,10)}), "Agregar a mi garaje", {quick:true, again:true}); }
+      if(b.dataset.add) openForm(Object.assign({status: b.dataset.add==="wish"?"wish":"owned"}, isUPC?{barcode:k}:{code:k}));
+    };
+  }
+}
+
+/* ============ respaldo ============ */
+async function saveFile(filename, data){
+  let dl = null; try{ dl = window.claude && window.claude.use ? await window.claude.use("downloads") : null; }catch(e){}
+  if(!dl){
+    const type = filename.endsWith(".csv") ? "text/csv" : "application/json";
+    try{
+      const file = new File([data], filename, {type});
+      if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:filename}); toast("Elige “Guardar en Archivos” para conservarlo"); return; }
+    }catch(e){ if(e && e.name==="AbortError") return; }
+    try{
+      const url = URL.createObjectURL(new Blob([data], {type}));
+      const a = document.createElement("a"); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 4000); toast("Archivo descargado");
+    }catch(e){ toast("No se pudo guardar el archivo"); }
+    return;
+  }
+  try{ const r = await dl.save({filename, data}); if(r && r.status==="saved") toast("Archivo guardado"); }
+  catch(e){ if(e && e.code!=="cancelled" && e.code!=="declined") toast("No se pudo guardar el archivo"); }
+}
+function stamp(){ return new Date().toISOString().slice(0,10); }
+function exportJson(){ saveFile(`garaje64-respaldo-${stamp()}.json`, JSON.stringify({app:"Garaje 64", version:1, exported:new Date().toISOString(), lists:state.lists, cars:state.cars}, null, 1)); }
+function exportCsv(){
+  const cols = [["name","Nombre"],["series","Serie"],["year","Año"],["caseLetter","Case"],["colNum","N.º colección"],["code","Toy #"],["barcode","Código de barras"],["color","Color"],["th","TH/STH"],["status","Estado colección"],["condition","Empaque"],["quality","Condición"],["qty","Cantidad"],["price","Pagado"],["value","Valor estimado"],["store","Tienda"],["date","Fecha"],["location","Ubicación"],["lists","Listas"],["trade","Intercambio"],["notes","Notas"]];
+  const cell = v => { const s = Array.isArray(v)? v.join(" | ") : v===true?"Sí":v===false?"No":String(v??""); return /[",\n;]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s; };
+  const rows = [cols.map(c=>c[1]).join(","), ...state.cars.map(c=>cols.map(([k])=>cell(k==="status"?(c.status==="wish"?"Wishlist":"Tengo"):c[k])).join(","))];
+  saveFile(`garaje64-${stamp()}.csv`, "﻿" + rows.join("\n"));
+}
+async function importJson(file){
+  if(!file) return;
+  try{
+    const data = JSON.parse(await file.text());
+    const cars = Array.isArray(data) ? data : data.cars;
+    if(!Array.isArray(cars)) throw new Error("formato");
+    const have = new Set(state.cars.map(c=>c.id));
+    const add = cars.filter(c=>c && c.id && c.name && !have.has(c.id));
+    if(Array.isArray(data.lists)){ const nl=[...new Set([...state.lists, ...data.lists])]; await store.setMeta({lists:nl}); }
+    await store.putMany(add);
+    toast(`Importados ${add.length} autos`);
+  }catch(e){ toast("El archivo no es un respaldo válido de Garaje 64."); }
+}
+async function copyLocalTo(target){
+  const db = await getCloud();
+  if(!db || (target==="cuenta" && !(await getUserId()))) return toast("Abre la app con tu sesión de claude.ai iniciada para guardar en tu cuenta.");
+  const local = LocalStore(); const cars = (await local.all()).filter(c=>!c.example); const meta = await local.getMeta();
+  if(!cars.length){ ls.set("g64.migrated", true); if(target!==state.mode){ ls.set("g64.mode2", target); await setMode(target); } return toast("No hay autos propios en este navegador para pasar."); }
+  const dest = makeStore(target, db);
+  toast(`Pasando ${cars.length} autos…`);
+  try{
+    const cur = await dest.fetchMeta(); const cl = (cur && cur.lists) || [];
+    await dest.setMeta({lists:[...new Set([...cl, ...((meta&&meta.lists)||[])])]});
+    await dest.putMany(cars);
+    ls.set("g64.migrated", true); ls.set("g64.mode2", target);
+    await setMode(target);
+    toast(`Listo: ${cars.length} autos guardados en ${target==="cuenta"?"tu cuenta":"la colección compartida"}`);
+  }catch(e){ toast("No se pudo pasar: "+(e.message||e.code)); }
+}
+
+/* ============ arranque ============ */
+(async function boot(){
+  render();
+  if(SITE){ await askPersist(); await setMode("local", true); return; }
+  const pref = ls.get("g64.mode2", null);          // solo si la persona eligió un modo a mano
+  const db = await getCloud();
+  const uid = db ? await getUserId() : null;
+  let mode = uid ? "cuenta" : "local";
+  if(pref === "cloud" && db) mode = "cloud";
+  if(pref === "local") mode = "local";
+  await setMode(mode, true);
+})();
+</script>
+
+</body>
+</html>
